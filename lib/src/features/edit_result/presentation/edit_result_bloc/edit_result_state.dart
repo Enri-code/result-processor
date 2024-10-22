@@ -52,6 +52,7 @@ class EditResultState extends Equatable {
         modifyGridEvent,
       ];
 
+  /// Dispose this State Class properties when the state is no longer used
   void dispose() {
     courseTitleTEC.dispose();
     courseCodeTEC.dispose();

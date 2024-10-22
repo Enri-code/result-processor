@@ -1,6 +1,3 @@
-import 'dart:math';
-
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -27,6 +24,8 @@ class PlutoGridGradingPage extends StatelessWidget {
       ],
       child: MultiBlocListener(
         listeners: [
+          // When the Tab changes, update the [EditResultBloc]'s state to
+          // corresponding Tab State
           BlocListener<ResultTabBloc, ResultTabState>(
             listenWhen: (p, c) => p.getCurrentTab != c.getCurrentTab,
             listener: (context, state) {
@@ -37,7 +36,9 @@ class PlutoGridGradingPage extends StatelessWidget {
                   );
             },
           ),
-          //Consider to only save when tab is changed
+          //Save new [EditResultState] instance in [ResultTabBloc]'s memory
+          //when modified.
+          //Consider to only save when Tab is changed
           BlocListener<EditResultBloc, EditResultState>(
             listener: (context, state) {
               context.read<ResultTabBloc>().add(SaveEditResultSetStateEvent(

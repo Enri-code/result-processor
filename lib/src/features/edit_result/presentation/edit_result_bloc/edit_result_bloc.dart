@@ -19,6 +19,7 @@ class EditResultBloc extends Bloc<EditResultEvent, EditResultState> {
     on<InsertRowsEvent>((event, emit) {
       final rowsToBeAdded = event.rows ??
           List.generate(event.count, (_) {
+            // generate empty row cells
             return PlutoRow(cells: {
               ColumnKeys.fullname: PlutoCell(value: ''),
               ColumnKeys.studentId: PlutoCell(value: ''),
@@ -29,6 +30,7 @@ class EditResultBloc extends Bloc<EditResultEvent, EditResultState> {
             });
           });
 
+      // insert rows to index (default to end of list)
       emit(state.copyWith(
         event: event,
         rows: List.from(state.rows)
@@ -59,7 +61,6 @@ class EditResultBloc extends Bloc<EditResultEvent, EditResultState> {
 num _calculateRowTotal(Map<String, PlutoCell> cells) {
   num getScoreFromCell(String cellKey) {
     final value = cells[cellKey]!.value.toString();
-    if (value == '-') return 0;
     return num.parse(value);
   }
 

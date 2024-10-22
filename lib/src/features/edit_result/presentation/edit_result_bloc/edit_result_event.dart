@@ -27,6 +27,10 @@ class ExportResultEvent extends EditResultEvent {
 abstract class ModifyGridEvent extends EditResultEvent {
   const ModifyGridEvent();
 
+  /// Each [ModifyGridEvent] has a function to be called to update the
+  /// UI's state with the new values sent to the Bloc.
+  /// A BlocListener in the Widget tree shall listen for these events's data
+  /// and handle appropraitely
   void onModify(EditResultState state, PlutoGridStateManager stateManager);
 }
 
@@ -61,16 +65,6 @@ class InsertRowsEvent extends ModifyGridEvent {
         event.rows ?? state.rows.getRange(index, index + event.count).toList();
 
     stateManager.insertRows(index, rowsToBeAdded);
-    // PlutoGridStateManager.initializeRowsAsync(
-    //   gridColumns,
-    //   rowsToBeAdded,
-    //   chunkSize: 20,
-    //   start: index,
-    // ).then((value) {
-    //   print('$index -> ${value.length}');
-    //   stateManager.refRows.insertAll(index, value);
-    //   // stateManager.notifyListeners();
-    // });
   }
 }
 

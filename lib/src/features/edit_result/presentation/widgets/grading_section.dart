@@ -7,18 +7,9 @@ abstract class ColumnKeys {
   static const exam = 'exam';
   static const total = 'total';
   static const grade = 'grade';
-
-  static const List<String> values = [
-    fullname,
-    studentId,
-    test,
-    exam,
-    total,
-    grade
-  ];
 }
 
-final List<PlutoColumn> gridColumns = [
+final List<PlutoColumn> _gridColumns = [
   PlutoColumn(
     title: 'Full Name',
     field: ColumnKeys.fullname,
@@ -216,8 +207,7 @@ class _GridSectionState extends State<_GridSection> {
                       return PlutoGrid(
                         key: ValueKey(getCurrentTab),
                         rows: List.from(state.rows),
-                        columns: gridColumns,
-                        // columnMenuDelegate: PlutoColumnMenuDelegateDefault(),
+                        columns: _gridColumns,
                         configuration: const PlutoGridConfiguration(
                           enterKeyAction:
                               PlutoGridEnterKeyAction.editingAndMoveRight,
@@ -305,26 +295,26 @@ class _GridSectionState extends State<_GridSection> {
 
     final editResultBloc = context.read<EditResultBloc>();
     if (editResultBloc.state.rows.isEmpty) {
-      if (kDebugMode) {
-        final rowsToBeAdded = List.generate(Random().nextInt(10), (_) {
-          return PlutoRow(cells: {
-            ColumnKeys.fullname: PlutoCell(value: ''),
-            ColumnKeys.studentId: PlutoCell(value: ''),
-            ColumnKeys.test: PlutoCell(value: Random().nextInt(30)),
-            ColumnKeys.exam: PlutoCell(value: Random().nextInt(70)),
-            ColumnKeys.total: PlutoCell(value: ''),
-            ColumnKeys.grade: PlutoCell(value: ''),
-          });
-        });
-        editResultBloc.add(InsertRowsEvent(rows: rowsToBeAdded));
-      }
+      // if (kDebugMode) {
+      //   final rowsToBeAdded = List.generate(Random().nextInt(10), (_) {
+      //     return PlutoRow(cells: {
+      //       ColumnKeys.fullname: PlutoCell(value: ''),
+      //       ColumnKeys.studentId: PlutoCell(value: ''),
+      //       ColumnKeys.test: PlutoCell(value: Random().nextInt(30)),
+      //       ColumnKeys.exam: PlutoCell(value: Random().nextInt(70)),
+      //       ColumnKeys.total: PlutoCell(value: ''),
+      //       ColumnKeys.grade: PlutoCell(value: ''),
+      //     });
+      //   });
+      //   editResultBloc.add(InsertRowsEvent(rows: rowsToBeAdded));
+      // }
 
-      ///insert empty rows if empty
+      ///insert new empty rows if table has no rows already
       editResultBloc.add(const InsertRowsEvent(count: 100));
     }
 
-    ///calculate all row data
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      ///calculate row data [total and grade] for each row
       for (var row in editResultBloc.state.rows) {
         editResultBloc.add(CalculateRowData(row));
       }
