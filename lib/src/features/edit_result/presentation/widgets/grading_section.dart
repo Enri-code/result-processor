@@ -308,12 +308,12 @@ class _GridSectionState extends State<_GridSection> {
       if (kDebugMode) {
         final rowsToBeAdded = List.generate(Random().nextInt(10), (_) {
           return PlutoRow(cells: {
-            'full_name': PlutoCell(value: ''),
-            'reg_no': PlutoCell(value: ''),
-            'c_a': PlutoCell(value: Random().nextInt(30)),
-            'exam': PlutoCell(value: Random().nextInt(70)),
-            'total': PlutoCell(value: ''),
-            'grade': PlutoCell(value: ''),
+            ColumnKeys.fullname: PlutoCell(value: ''),
+            ColumnKeys.studentId: PlutoCell(value: ''),
+            ColumnKeys.test: PlutoCell(value: Random().nextInt(30)),
+            ColumnKeys.exam: PlutoCell(value: Random().nextInt(70)),
+            ColumnKeys.total: PlutoCell(value: ''),
+            ColumnKeys.grade: PlutoCell(value: ''),
           });
         });
         editResultBloc.add(InsertRowsEvent(rows: rowsToBeAdded));

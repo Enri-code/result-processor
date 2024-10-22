@@ -20,12 +20,12 @@ class EditResultBloc extends Bloc<EditResultEvent, EditResultState> {
       final rowsToBeAdded = event.rows ??
           List.generate(event.count, (_) {
             return PlutoRow(cells: {
-              'full_name': PlutoCell(value: ''),
-              'reg_no': PlutoCell(value: ''),
-              'c_a': PlutoCell(value: ''),
-              'exam': PlutoCell(value: ''),
-              'total': PlutoCell(value: ''),
-              'grade': PlutoCell(value: ''),
+              ColumnKeys.fullname: PlutoCell(value: ''),
+              ColumnKeys.studentId: PlutoCell(value: ''),
+              ColumnKeys.test: PlutoCell(value: ''),
+              ColumnKeys.exam: PlutoCell(value: ''),
+              ColumnKeys.total: PlutoCell(value: ''),
+              ColumnKeys.grade: PlutoCell(value: ''),
             });
           });
 
