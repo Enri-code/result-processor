@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:unn_grading/src/features/result_tabs/domain/models/result_tab.dart';
-import 'package:unn_grading/src/features/result_tabs/presentation/result_tab_bloc/result_tab_bloc.dart';
+import 'package:unn_grading/src/features/results/domain/models/result_tab.dart';
+import 'package:unn_grading/src/features/results/presentation/bloc/result_tab_bloc/result_tab_bloc.dart';
 
 class ResultTabWiget extends StatefulWidget {
   const ResultTabWiget({super.key, required this.tab});
@@ -35,8 +35,8 @@ class _ResultTabWigetState extends State<ResultTabWiget> {
               height: 32,
               duration: Durations.medium1,
               alignment: Alignment.centerLeft,
-              margin: EdgeInsets.only(left: isActive ? 2 : 12),
-              padding: const EdgeInsets.symmetric(horizontal: 6),
+              margin: EdgeInsets.only(left: isActive ? 2 : 12, right: 4),
+              padding: const EdgeInsets.only(left: 4),
               decoration: BoxDecoration(
                 color: isActive
                     ? Colors.white
@@ -46,11 +46,7 @@ class _ResultTabWigetState extends State<ResultTabWiget> {
                 borderRadius: BorderRadius.horizontal(
                   left: Radius.circular(isActive ? 20 : 4),
                 ),
-                border: Border(
-                  top: BorderSide(color: Colors.grey[400]!),
-                  left: BorderSide(color: Colors.grey[400]!),
-                  bottom: BorderSide(color: Colors.grey[400]!),
-                ),
+                border: Border.all(color: Colors.grey[400]!),
                 boxShadow: isActive || isHovered
                     ? const [
                         BoxShadow(
@@ -63,11 +59,9 @@ class _ResultTabWigetState extends State<ResultTabWiget> {
               ),
               child: Row(
                 children: [
+                  const SizedBox(width: 2),
                   Expanded(
-                    child: Text(
-                      title,
-                      overflow: TextOverflow.ellipsis,
-                    ),
+                    child: Text(title, overflow: TextOverflow.ellipsis),
                   ),
                   const SizedBox(width: 4),
                   if (isHovered)

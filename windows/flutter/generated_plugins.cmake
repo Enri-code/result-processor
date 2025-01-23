@@ -3,7 +3,9 @@
 #
 
 list(APPEND FLUTTER_PLUGIN_LIST
-  printing
+  irondash_engine_context
+  super_native_extensions
+  url_launcher_windows
   window_size
 )
 

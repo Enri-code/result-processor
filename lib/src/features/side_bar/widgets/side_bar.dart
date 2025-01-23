@@ -1,28 +1,10 @@
-import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:unn_grading/src/core/constants/app_color.dart';
-import 'package:unn_grading/src/features/result_tabs/domain/models/result_tab.dart';
-import 'package:unn_grading/src/features/result_tabs/presentation/result_tab_bloc/result_tab_bloc.dart';
+import 'package:unn_grading/src/features/results/domain/models/result_tab.dart';
+import 'package:unn_grading/src/features/results/presentation/bloc/result_tab_bloc/result_tab_bloc.dart';
 import 'package:unn_grading/src/features/side_bar/widgets/result_tabs.dart';
 import 'package:unn_grading/src/features/side_bar/side_bar_bloc/side_bar_bloc.dart';
-
-class MySideBarItem extends Equatable {
-  final IconData icon;
-  final String label;
-  final bool enabled;
-  final void Function(PointerUpEvent)? onPointerUp;
-
-  const MySideBarItem({
-    required this.icon,
-    required this.label,
-    this.onPointerUp,
-    this.enabled = true,
-  });
-
-  @override
-  List<Object?> get props => [icon, label];
-}
+import 'package:url_launcher/url_launcher.dart';
 
 class MySideBarTheme {
   final TextStyle? textStyle;
@@ -34,14 +16,14 @@ class MySideBarTheme {
 class MySideBar extends StatelessWidget {
   const MySideBar({
     super.key,
-    required this.items,
+    // required this.items,
     required this.expandedWidth,
     required this.width,
     required this.child,
     this.theme,
   });
 
-  final List<MySideBarItem> items;
+  // final List<MySideBarItem> items;
   final MySideBarTheme? theme;
   final double expandedWidth, width;
   final Widget child;
@@ -51,7 +33,7 @@ class MySideBar extends StatelessWidget {
     return BlocProvider(
       create: (context) => SideBarBloc(),
       child: LayoutBuilder(builder: (context, constraints) {
-        bool csnShrink = constraints.maxWidth < 710;
+        bool csnShrink = constraints.maxWidth < 760;
         context.read<SideBarBloc>().add(SetSideBarShrinkMode(csnShrink));
 
         return BlocSelector<SideBarBloc, SideBarState, bool>(
@@ -90,29 +72,12 @@ class MySideBar extends StatelessWidget {
                           child: OverflowBox(
                             maxWidth: expandedWidth,
                             alignment: Alignment.centerLeft,
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                const SizedBox(height: 16),
-                                ...List.generate(
-                                  items.length,
-                                  (i) => _OptionWidget(item: items[i]),
-                                ),
-                                const SizedBox(height: 16),
-                                Container(
-                                  height: 1,
-                                  width: expandedWidth - 4,
-                                  margin: const EdgeInsets.only(left: 4),
-                                  color: Colors.grey,
-                                ),
-                                const DefaultTextStyle(
-                                  style: TextStyle(
-                                    fontSize: 10,
-                                    color: Colors.black,
-                                  ),
-                                  child: Expanded(child: _TabsSection()),
-                                ),
-                              ],
+                            child: const DefaultTextStyle(
+                              style: TextStyle(
+                                fontSize: 10,
+                                color: Colors.black,
+                              ),
+                              child: _TabsSection(),
                             ),
                           ),
                         ),
@@ -136,6 +101,46 @@ class MySideBar extends StatelessWidget {
           },
         );
       }),
+    );
+  }
+}
+
+class _LogoBanner extends StatelessWidget {
+  const _LogoBanner();
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: () {
+        launchUrl(Uri.parse('https://techsalis.com/'));
+      },
+      child: Container(
+        padding: const EdgeInsets.fromLTRB(6, 6, 6, 8),
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          boxShadow: [BoxShadow(blurRadius: 2, color: Colors.black26)],
+        ),
+        child: const Row(
+          children: [
+            Image(width: 22, image: AssetImage('assets/images/techsalis.png')),
+            Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('   Powered by', style: TextStyle(fontSize: 8.5)),
+                Text(
+                  '  TechSalis.',
+                  style: TextStyle(
+                    fontSize: 13.5,
+                    fontWeight: FontWeight.w500,
+                    height: 1.1,
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
@@ -171,83 +176,29 @@ class _TabsSectionState extends State<_TabsSection> {
           child: BlocSelector<ResultTabBloc, ResultTabState, List<ResultTab>>(
             selector: (state) => state.resultTabs,
             builder: (context, state) {
-              return ListView.separated(
-                controller: scroll,
-                itemCount: state.length,
-                padding: const EdgeInsets.symmetric(vertical: 24),
-                itemBuilder: (context, index) {
-                  final tab = state[index];
-                  return ResultTabWiget(key: ValueKey(tab), tab: tab);
-                },
-                separatorBuilder: (context, index) {
-                  return const SizedBox(height: 12);
-                },
+              return Column(
+                children: [
+                  Expanded(
+                    child: ListView.separated(
+                      controller: scroll,
+                      itemCount: state.length,
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      itemBuilder: (context, index) {
+                        final tab = state[index];
+                        return ResultTabWiget(key: ValueKey(tab), tab: tab);
+                      },
+                      separatorBuilder: (context, index) {
+                        return const SizedBox(height: 12);
+                      },
+                    ),
+                  ),
+                  const _LogoBanner(),
+                ],
               );
             },
           ),
         ),
       ),
-    );
-  }
-}
-
-class _OptionWidget extends StatefulWidget {
-  const _OptionWidget({required this.item});
-
-  final MySideBarItem item;
-
-  @override
-  State<_OptionWidget> createState() => _OptionWidgetState();
-}
-
-class _OptionWidgetState extends State<_OptionWidget> {
-  bool hovered = false;
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 4),
-      child: Builder(builder: (context) {
-        final child = Padding(
-          padding: const EdgeInsets.all(4),
-          child: Row(
-            children: [
-              Icon(
-                widget.item.icon,
-                color: hovered ? AppColor.primary : null,
-              ),
-              const SizedBox(width: 8),
-              BlocSelector<SideBarBloc, SideBarState, bool>(
-                selector: (state) => state.expanded || !state.canShrink,
-                builder: (context, expanded) {
-                  return AnimatedOpacity(
-                    duration: Durations.medium2,
-                    opacity: expanded ? 1 : 0,
-                    child: Text(
-                      widget.item.label,
-                      overflow: TextOverflow.fade,
-                      style: TextStyle(
-                        color: hovered ? AppColor.primary : null,
-                      ),
-                    ),
-                  );
-                },
-              ),
-            ],
-          ),
-        );
-        if (!widget.item.enabled) return Opacity(opacity: 0.6, child: child);
-
-        return Listener(
-          onPointerUp: widget.item.onPointerUp,
-          behavior: HitTestBehavior.opaque,
-          child: MouseRegion(
-            onHover: (event) => setState(() => hovered = true),
-            onExit: (event) => setState(() => hovered = false),
-            child: child,
-          ),
-        );
-      }),
     );
   }
 }
