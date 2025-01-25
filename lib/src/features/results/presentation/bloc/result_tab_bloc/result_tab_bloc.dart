@@ -1,6 +1,7 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:unn_grading/src/features/results/domain/models/result.dart';
 import 'package:unn_grading/src/features/results/presentation/bloc/edit_result_bloc/edit_result_bloc.dart';
 import 'package:unn_grading/src/features/results/domain/models/result_tab.dart';
 
@@ -13,15 +14,13 @@ class ResultTabBloc extends Bloc<ResultTabEvent, ResultTabState> {
       final tab = NewResultTab(id: UniqueKey().toString());
       _setNewTab(emit, tab);
     });
-    // on<OpenResultTabEvent>((event, emit) {
-    //   final key = UniqueKey().toString();
-    //   final tab = OpenResultTab(
-    //     title: key,
-    //     id: key,
-    //     source: ResultTabSourceLocal(''),
-    //   );
-    //   _setNewTab(emit, tab);
-    // });
+    on<OpenResultTabEvent>((event, emit) {
+      final tab = NewResultTab(
+        title: event.result.courseCode,
+        id: event.result.id ?? UniqueKey().toString(),
+      );
+      _setNewTab(emit, tab);
+    });
     on<GoToResultTabEvent>((event, emit) {
       emit(state.copyWith(currentTab: event.tab));
     });

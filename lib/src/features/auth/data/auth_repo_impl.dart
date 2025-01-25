@@ -33,9 +33,46 @@ class AuthRepositoryImpl extends AuthRepository {
     try {
       final response = await dioService.post('/auth/register', data: {
         "username": data.username,
+        "email": data.email,
         "password": data.password,
         "role": data.role,
       });
+
+      if (response.statusCode == 201) return const Right(true);
+
+      return Left(RequestError(response.data['error']));
+    } catch (e) {
+      return const Left(RequestError.unknown);
+    }
+  }
+
+  @override
+  Future<Either<RequestError, bool>> forgotPassword(String email) async {
+    try {
+      final response = await dioService.post(
+        '/auth/register',
+        data: {"email": email},
+      );
+
+      if (response.statusCode == 201) return const Right(true);
+
+      return Left(RequestError(response.data['error']));
+    } catch (e) {
+      return const Left(RequestError.unknown);
+    }
+  }
+
+  @override
+  Future<Either<RequestError, bool>> resetPassword(
+    String email,
+    String otp,
+    String newPassword,
+  ) async {
+    try {
+      final response = await dioService.post(
+        '/auth/register',
+        data: {"email": email, "otp": otp, "password": newPassword},
+      );
 
       if (response.statusCode == 201) return const Right(true);
 

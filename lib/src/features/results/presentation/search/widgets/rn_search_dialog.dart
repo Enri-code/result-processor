@@ -5,14 +5,14 @@ import 'package:unn_grading/src/features/results/presentation/search/search_resu
 import 'package:unn_grading/src/features/results/presentation/search/widgets/base_search_dialog.dart';
 import 'package:unn_grading/src/features/results/presentation/widgets/custom_text_fields.dart';
 
-class CCSearchDialog extends StatefulWidget {
-  const CCSearchDialog({super.key});
+class RNSearchDialog extends StatefulWidget {
+  const RNSearchDialog({super.key});
 
   @override
-  State<CCSearchDialog> createState() => _CCSearchDialogState();
+  State<RNSearchDialog> createState() => _RNSearchDialogState();
 }
 
-class _CCSearchDialogState extends State<CCSearchDialog> {
+class _RNSearchDialogState extends State<RNSearchDialog> {
   final searchController = TextEditingController();
   final sessionController = TextEditingController();
 
@@ -37,7 +37,7 @@ class _CCSearchDialogState extends State<CCSearchDialog> {
               child: TextField(
                 controller: searchController,
                 decoration: const InputDecoration(
-                  hintText: 'Type Course Code',
+                  hintText: 'Type Registration Number',
                   prefixIcon: Icon(Icons.search_rounded),
                   contentPadding: EdgeInsets.symmetric(vertical: 10),
                   border: InputBorder.none,
@@ -85,8 +85,8 @@ class _CCSearchDialogState extends State<CCSearchDialog> {
   void _onSearch() {
     if (formKey.currentState!.validate()) {
       context.read<SearchResultBloc>().add(SearchForResultEvent(
-            SearchResultByCourse(
-              courseCode: searchController.text,
+            SearchResultByRegistration(
+              regNo: searchController.text,
               session: sessionController.text,
             ),
           ));

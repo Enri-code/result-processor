@@ -27,4 +27,16 @@ class AuthLogIn extends AuthEvent {
   const AuthLogIn({required this.username, required this.password});
 }
 
+class AuthSendPasswprdReset extends AuthEvent {
+  final String email;
+
+  const AuthSendPasswprdReset({required this.email});
+}
+
+class AuthSetNewPasswprdReset extends AuthEvent {
+  final String otp, newPassword;
+
+  const AuthSetNewPasswprdReset({required this.otp, required this.newPassword});
+}
+
 class AuthLogOut extends AuthEvent {}

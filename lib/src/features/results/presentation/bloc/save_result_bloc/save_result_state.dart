@@ -16,12 +16,11 @@ sealed class SaveResultState extends Equatable {
 }
 
 final class SaveResultInitial extends SaveResultState {
+  const SaveResultInitial({super.status});
+
   @override
-  SaveResultInitial copyWith({
-    RequestStatus? status,
-    // Map<ResultTab, EditResultState>? savedResultStates,
-  }) {
-    throw UnimplementedError();
+  SaveResultInitial copyWith({RequestStatus? status}) {
+    return SaveResultInitial(status: status ?? this.status);
   }
 }
 
@@ -29,14 +28,8 @@ final class ValidateResultState extends SaveResultState {
   const ValidateResultState({super.status, super.savedResultStates});
 
   @override
-  ValidateResultState copyWith({
-    RequestStatus? status,
-    // Map<ResultTab, EditResultState>? savedResultStates,
-  }) {
-    return ValidateResultState(
-      status: status ?? this.status,
-      // savedResultStates: savedResultStates ?? this.savedResultStates,
-    );
+  ValidateResultState copyWith({RequestStatus? status}) {
+    return ValidateResultState(status: status ?? this.status);
   }
 }
 

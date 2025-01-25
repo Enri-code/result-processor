@@ -40,8 +40,30 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         emit(AuthLoggedIn(user: right));
       });
     });
-    on<AuthLogOut>((event, emit) {
-      emit(const AuthLoggedOut());
+    on<AuthLogOut>((event, emit) => emit(const AuthLoggedOut()));
+    on<AuthSendPasswprdReset>((event, emit) async {
+      emit(state.copyWith(status: const RequestLoading()));
+      final data = await repo.forgotPassword(event.email);
+
+      data.fold((left) {
+        emit(state.copyWith(status: left));
+      }, (right) {
+        emit(AuthResetPasswordState(event.email));
+      });
+    });
+    on<AuthSetNewPasswprdReset>((event, emit) async {
+      emit(state.copyWith(status: const RequestLoading()));
+      final data = await repo.resetPassword(
+        (state as AuthResetPasswordState).email,
+        event.otp,
+        event.newPassword,
+      );
+
+      data.fold((left) {
+        emit(state.copyWith(status: left));
+      }, (right) {
+        emit(const AuthPasswordResetState());
+      });
     });
     on<SwitchLoginType>((event, emit) {
       final _state = state as AuthLoggedOut;

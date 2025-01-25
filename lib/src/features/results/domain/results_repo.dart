@@ -9,9 +9,12 @@ abstract class ResultRepository {
   Future<Either<RequestError, bool>> update(UpdateResultData data);
   Future<Either<RequestError, bool>> submit(ResultData data);
   Future<Either<RequestError, bool>> delete(String id);
-  Future<Either<RequestError, bool>> searchByCourse(SearchResultByCourse data);
-  Future<Either<RequestError, bool>> searchByDept(SearchResultByDept data);
-  Future<Either<RequestError, bool>> searchByRegNo(
+  Future<Either<RequestError, ResultData>> openResult(String id);
+  Future<Either<RequestError, List<Result>>> searchByCourse(
+      SearchResultByCourse data);
+  Future<Either<RequestError, List<Result>>> searchByDept(
+      SearchResultByDept data);
+  Future<Either<RequestError, List<Result>>> searchByRegNo(
     SearchResultByRegistration data,
   );
 }

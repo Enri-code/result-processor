@@ -11,18 +11,15 @@ class NewResultTabEvent extends ResultTabEvent {
   const NewResultTabEvent();
 }
 
-// class OpenResultTabEvent extends ResultTabEvent {
-//   const OpenResultTabEvent();
-// }
+class OpenResultTabEvent extends ResultTabEvent {
+  const OpenResultTabEvent(this.result);
+  final Result result;
+}
 
 class CacheEditResultStateEvent extends ResultTabEvent {
   const CacheEditResultStateEvent({required this.state});
   final EditResultState state;
 }
-
-// class CloseResultTab extends ResultTabEvent {
-//   const CloseResultTab();
-// }
 
 class GoToResultTabEvent extends ResultTabEvent {
   const GoToResultTabEvent(this.tab);

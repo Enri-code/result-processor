@@ -1,3 +1,5 @@
+import 'package:equatable/equatable.dart';
+
 class UpdateResultData {
   final String courseCode, regNo, session, semester;
 
@@ -19,7 +21,8 @@ class UpdateResultData {
 class ResultData extends Result {
   final List<Score> results;
 
-  ResultData({
+  const ResultData({
+    super.id,
     required super.courseCode,
     required super.courseTitle,
     required super.semester,
@@ -36,15 +39,40 @@ class ResultData extends Result {
       "results": results.map((e) => e.toJson()).toList(),
     };
   }
+
+  factory ResultData.fromJson(Map<String, dynamic> json) {
+    final results = List.from(json['results']).map((e) {
+      return Score(
+        fullname: e['full_name'],
+        regNo: e['registration_number'],
+        ca: e['ca_score'],
+        exam: e['exam_score'],
+        total: e['total_score'],
+        grade: e['grade'],
+      );
+    }).toList();
+
+    return ResultData(
+      courseCode: json['course_code'],
+      courseTitle: json['course_title'],
+      semester: json['semester_name'],
+      session: json['session'],
+      department: json['exam_department'],
+      courseUnit: json['course_unit'],
+      results: results,
+    );
+  }
 }
 
-class Result {
+class Result extends Equatable {
+  final String? id;
   final String courseCode, courseTitle, semester, session;
   final String? department;
   final int? courseUnit;
   // final int? level;
 
-  Result({
+  const Result({
+    this.id,
     required this.courseCode,
     required this.courseTitle,
     required this.semester,
@@ -56,6 +84,7 @@ class Result {
   });
 
   Map<String, dynamic> toJson() => {
+        if (id != null) "id": id,
         "course_code": courseCode,
         "course_title": courseTitle,
         "course_unit": courseUnit,
@@ -65,6 +94,9 @@ class Result {
         "semester_name": semester,
         "session": session,
       };
+
+  @override
+  List<Object?> get props => [id];
 }
 
 class Score {

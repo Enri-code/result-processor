@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:unn_grading/src/core/utils/response_state.dart';
+import 'package:unn_grading/src/core/constants/theme.dart';
 import 'package:unn_grading/src/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:unn_grading/src/features/auth/presentation/widgets/login_tab.dart';
 import 'package:unn_grading/src/features/auth/presentation/widgets/register_tab.dart';
@@ -58,30 +58,27 @@ class _LoginViewState extends State<LoginView> {
             children: [
               if (consts.maxWidth > 500) const Expanded(child: _BGView()),
               Expanded(
-                child: BlocBuilder<AuthBloc, AuthState>(
-                  builder: (context, state) {
-                    return Stack(
-                      children: [
-                        PageView(
-                          // allowImplicitScrolling: true,
-                          controller: pageController,
-                          children: const [RegisterWidget(), LoginWidget()],
-                          onPageChanged: (value) {
-                            context.read<AuthBloc>().add(
-                                  SwitchLoginType(value),
-                                );
-                          },
-                        ),
-                        if (state.status is RequestLoading)
-                          const AbsorbPointer(
-                            child: ColoredBox(
-                              color: Colors.black26,
-                              child: Center(child: CircularProgressIndicator()),
-                            ),
-                          ),
-                      ],
-                    );
-                  },
+                child: ClipRRect(
+                  clipBehavior: Clip.hardEdge,
+                  child: MaterialApp(
+                    theme: themeData,
+                    debugShowCheckedModeBanner: false,
+                    home: Scaffold(
+                      body: BlocBuilder<AuthBloc, AuthState>(
+                        builder: (context, state) {
+                          return PageView(
+                            controller: pageController,
+                            children: const [LoginWidget(), RegisterWidget()],
+                            onPageChanged: (value) {
+                              context.read<AuthBloc>().add(
+                                    SwitchLoginType(value),
+                                  );
+                            },
+                          );
+                        },
+                      ),
+                    ),
+                  ),
                 ),
               ),
             ],

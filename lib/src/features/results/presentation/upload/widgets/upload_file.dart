@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:super_drag_and_drop/super_drag_and_drop.dart';
 import 'package:unn_grading/src/core/constants/app_color.dart';
 import 'package:unn_grading/src/core/utils/response_state.dart';
@@ -58,28 +59,26 @@ class _DragTargetWidgetState extends State<DragTargetWidget> {
                 if (event.session.allowedOperations.contains(
                   DropOperation.copy,
                 )) {
+                  setState(() => _dragging = true);
                   return DropOperation.copy;
-                } else {
-                  return DropOperation.none;
                 }
+                return DropOperation.none;
               },
-              onDropEnter: (event) => setState(() {
-                if (event.session.items.length == 1) _dragging = true;
-              }),
               onDropLeave: (event) => setState(() => _dragging = false),
               onPerformDrop: (event) async {
                 // Called when user dropped the item. You can now request the data.
                 // Note that data must be requested before the performDrop callback
                 // is over.
                 final reader = event.session.items.first.dataReader!;
-
                 reader.getFile(getFileFormat()!, (value) async {
-                  final file = File.fromRawPath(await value.readAll());
-                  final fileName = await reader.getSuggestedName();
+                  final path = (await getTemporaryDirectory()).path;
+                  final file = File(path + value.fileName!)
+                    ..writeAsBytes(await value.readAll());
+
                   if (mounted) {
                     // ignore: use_build_context_synchronously
                     context.read<UploadResultBloc>().add(
-                          PickResultFileEvent(file, fileName),
+                          PickResultFileEvent(file, value.fileName),
                         );
                   }
                 });

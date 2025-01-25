@@ -1,6 +1,9 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:unn_grading/src/core/utils/response_state.dart';
 import 'package:unn_grading/src/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:unn_grading/src/features/auth/presentation/widgets/forgot_password_tab.dart';
 
 const _heightSpacing = SizedBox(height: 11);
 
@@ -49,9 +52,11 @@ class _LoginWidgetState extends State<LoginWidget> {
               children: [
                 TextFormField(
                   controller: usernameTEC,
-                  decoration: const InputDecoration(hintText: 'Username'),
+                  decoration: const InputDecoration(
+                    hintText: 'Username or Email',
+                  ),
                   validator: (value) {
-                    if (value!.isEmpty) return 'Username required';
+                    if (value!.isEmpty) return 'Username or Email is required';
                     return null;
                   },
                 ),
@@ -79,16 +84,35 @@ class _LoginWidgetState extends State<LoginWidget> {
             ),
           ),
           _heightSpacing,
+          RichText(
+            text: TextSpan(
+              text: 'Forgot Password?',
+              style: TextStyle(fontSize: 11, color: Colors.blue[900]),
+              recognizer: TapGestureRecognizer()..onTap = _onForgotPassword,
+            ),
+          ),
           _heightSpacing,
-          ElevatedButton(
-            child: const Text('Log In'),
-            onPressed: () {
-              if (formKey.currentState!.validate()) {
-                context.read<AuthBloc>().add(AuthLogIn(
-                      username: usernameTEC.text,
-                      password: passwordTEC.text,
-                    ));
-              }
+          _heightSpacing,
+          BlocBuilder<AuthBloc, AuthState>(
+            builder: (context, state) {
+              return ElevatedButton(
+                child: state.status is RequestLoading
+                    ? const SizedBox.square(
+                        dimension: 16,
+                        child: Center(
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        ),
+                      )
+                    : const Text('Log In'),
+                onPressed: () {
+                  if (formKey.currentState!.validate()) {
+                    context.read<AuthBloc>().add(AuthLogIn(
+                          username: usernameTEC.text,
+                          password: passwordTEC.text,
+                        ));
+                  }
+                },
+              );
             },
           ),
           _heightSpacing,
@@ -97,11 +121,17 @@ class _LoginWidgetState extends State<LoginWidget> {
           OutlinedButton(
             child: const Text('Register'),
             onPressed: () {
-              context.read<AuthBloc>().add(const SwitchLoginType(0));
+              context.read<AuthBloc>().add(const SwitchLoginType(1));
             },
           ),
         ],
       ),
     );
+  }
+
+  void _onForgotPassword() {
+    Navigator.of(context).push(MaterialPageRoute(
+      builder: (context) => const ForgotPasswordWidget(),
+    ));
   }
 }

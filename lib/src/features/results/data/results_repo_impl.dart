@@ -78,7 +78,7 @@ class ResultRepositoryImpl extends ResultRepository {
   }
 
   @override
-  Future<Either<RequestError, bool>> searchByDept(
+  Future<Either<RequestError, List<Result>>> searchByDept(
       SearchResultByDept data) async {
     try {
       final response = await dioService.post(
@@ -86,7 +86,11 @@ class ResultRepositoryImpl extends ResultRepository {
         data: data.toJson(),
       );
 
-      if (response.statusCode == 200) return const Right(true);
+      if (response.statusCode == 200) {
+        return Right(List.from(response.data['results']).map((e) {
+          return ResultData.fromJson(e);
+        }).toList());
+      }
 
       return Left(RequestError(response.data['error']));
     } catch (e) {
@@ -95,16 +99,34 @@ class ResultRepositoryImpl extends ResultRepository {
   }
 
   @override
-  Future<Either<RequestError, bool>> searchByCourse(
+  Future<Either<RequestError, List<Result>>> searchByCourse(
     SearchResultByCourse data,
   ) async {
+    // return Future.delayed(
+    //   const Duration(seconds: 3),
+    //   () => Right(List.generate(9, (index) {
+    //     return const Result(
+    //       id: '',
+    //       courseCode: 'Cos 444',
+    //       courseTitle: 'Cos Title',
+    //       semester: 'First',
+    //       session: '2020-2021',
+    //       department: 'Comp Sci',
+    //       courseUnit: 3,
+    //     );
+    //   })),
+    // );
     try {
       final response = await dioService.get(
         '/results/by-course',
         data: data.toJson(),
       );
 
-      if (response.statusCode == 200) return const Right(true);
+      if (response.statusCode == 200) {
+        return Right(List.from(response.data['results']).map((e) {
+          return ResultData.fromJson(e);
+        }).toList());
+      }
 
       return Left(RequestError(response.data['error']));
     } catch (e) {
@@ -113,7 +135,7 @@ class ResultRepositoryImpl extends ResultRepository {
   }
 
   @override
-  Future<Either<RequestError, bool>> searchByRegNo(
+  Future<Either<RequestError, List<Result>>> searchByRegNo(
       SearchResultByRegistration data) async {
     try {
       final response = await dioService.get(
@@ -121,7 +143,46 @@ class ResultRepositoryImpl extends ResultRepository {
         data: data.toJson(),
       );
 
-      if (response.statusCode == 200) return const Right(true);
+      if (response.statusCode == 200) {
+        return Right(List.from(response.data['results']).map((e) {
+          return ResultData.fromJson(e);
+        }).toList());
+      }
+      return Left(RequestError(response.data['error']));
+    } catch (e) {
+      return const Left(RequestError.unknown);
+    }
+  }
+
+  @override
+  Future<Either<RequestError, ResultData>> openResult(String id) async {
+    try {
+      // return Future.delayed(
+      //   const Duration(seconds: 3),
+      //   () => Right(ResultData(
+      //     id: '',
+      //     courseUnit: 3,
+      //     courseCode: 'Cos 444',
+      //     courseTitle: 'Cos Title',
+      //     semester: 'First',
+      //     session: '2020-2021',
+      //     department: 'Comp Sci',
+      //     results: List.generate(40, (index) {
+      //       return Score(
+      //           fullname: 'Eric Onyeulo',
+      //           regNo: '2019/247680',
+      //           grade: 'A',
+      //           ca: 28,
+      //           exam: 67,
+      //           total: 95);
+      //     }),
+      //   )),
+      // );
+      final response = await dioService.get('/results/$id}');
+
+      if (response.statusCode == 200) {
+        return Right(ResultData.fromJson(response.data));
+      }
 
       return Left(RequestError(response.data['error']));
     } catch (e) {

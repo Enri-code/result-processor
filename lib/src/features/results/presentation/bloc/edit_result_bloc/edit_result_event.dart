@@ -19,6 +19,25 @@ class SetEditResultStateEvent extends EditResultEvent {
   final EditResultState? state;
 }
 
+class SetOpenResultStateEvent extends ModifyGridEvent {
+  const SetOpenResultStateEvent(this.data) : _rows = const [];
+
+  const SetOpenResultStateEvent._(this.data, {List<PlutoRow>? rows})
+      : _rows = rows ?? const [];
+
+  final ResultData data;
+  final List<PlutoRow> _rows;
+
+  @override
+  void onModify(EditResultState state, PlutoGridStateManager stateManager) {
+    stateManager.insertRows(0, _rows);
+  }
+
+  SetOpenResultStateEvent _copyWith({ResultData? data, List<PlutoRow>? rows}) {
+    return SetOpenResultStateEvent._(data ?? this.data, rows: rows ?? _rows);
+  }
+}
+
 // class ExportResultEvent extends EditResultEvent {
 //   // const ExportResultEvent(this.exporter);
 //   // final ExportPlutoGridResult exporter;
@@ -36,15 +55,12 @@ abstract class ModifyGridEvent extends EditResultEvent {
 
 class RemoveRowsEvent extends ModifyGridEvent {
   final List<int> indexes;
-
   const RemoveRowsEvent({required this.indexes});
 
   @override
   void onModify(EditResultState state, PlutoGridStateManager stateManager) {
     stateManager.removeRows(
-      (state.modifyGridEvent as RemoveRowsEvent).indexes.map((i) {
-        return stateManager.refRows[i];
-      }).toList(),
+      indexes.map((i) => stateManager.refRows[i]).toList(),
     );
   }
 }
@@ -58,13 +74,10 @@ class InsertRowsEvent extends ModifyGridEvent {
 
   @override
   void onModify(EditResultState state, PlutoGridStateManager stateManager) {
-    final event = state.modifyGridEvent as InsertRowsEvent;
-    final index = event.index ?? stateManager.refRows.length;
+    final i = index ?? stateManager.refRows.length;
+    final rowsToBeAdded = rows ?? state.rows.getRange(i, i + count).toList();
 
-    final rowsToBeAdded =
-        event.rows ?? state.rows.getRange(index, index + event.count).toList();
-
-    stateManager.insertRows(index, rowsToBeAdded);
+    stateManager.insertRows(i, rowsToBeAdded);
   }
 }
 

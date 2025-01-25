@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:pluto_grid/pluto_grid.dart';
 import 'package:unn_grading/src/core/utils/response_state.dart';
+import 'package:unn_grading/src/features/results/domain/models/result.dart';
 import 'package:unn_grading/src/features/results/presentation/pages/pluto_grid_grading_page.dart';
 
 part 'edit_result_event.dart';
@@ -54,6 +55,31 @@ class EditResultBloc extends Bloc<EditResultEvent, EditResultState> {
     });
     on<SetEditResultStateEvent>((event, emit) {
       emit(event.state ?? EditResultState());
+    });
+    on<SetOpenResultStateEvent>((event, emit) {
+      final rows = event.data.results.map((e) {
+        return PlutoRow(cells: {
+          ColumnKeys.fullname: PlutoCell(value: e.fullname),
+          ColumnKeys.studentId: PlutoCell(value: e.regNo),
+          ColumnKeys.test: PlutoCell(value: e.ca),
+          ColumnKeys.exam: PlutoCell(value: e.exam),
+          ColumnKeys.total: PlutoCell(value: e.total),
+          ColumnKeys.grade: PlutoCell(value: e.grade),
+        });
+      }).toList();
+
+      final state = EditResultState(
+        rows: rows,
+        modifyGridEvent: event._copyWith(rows: rows),
+        courseCodeTEC: TextEditingController(text: event.data.courseCode),
+        courseTitleTEC: TextEditingController(text: event.data.courseTitle),
+        semesterTEC: TextEditingController(text: event.data.semester),
+        sessionTEC: TextEditingController(text: event.data.session),
+        departmentTEC: TextEditingController(text: event.data.department),
+        unitsTEC: TextEditingController(text: event.data.courseUnit.toString()),
+      );
+
+      emit(state);
     });
   }
 }

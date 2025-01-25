@@ -1,84 +1,71 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:unn_grading/src/core/utils/response_state.dart';
-import 'package:unn_grading/src/features/auth/domain/auth_repo.dart';
 import 'package:unn_grading/src/features/auth/presentation/bloc/auth_bloc.dart';
 
 const _heightSpacing = SizedBox(height: 11);
 
-class RegisterWidget extends StatefulWidget {
-  const RegisterWidget({super.key});
+class SetNewPasswordWidget extends StatefulWidget {
+  const SetNewPasswordWidget({super.key});
 
   @override
-  State<RegisterWidget> createState() => _RegisterWidgetState();
+  State<SetNewPasswordWidget> createState() => _SetNewPasswordWidgetState();
 }
 
-class _RegisterWidgetState extends State<RegisterWidget> {
-  final roleTEC = TextEditingController();
-  final usernameTEC = TextEditingController();
-  // final emailTEC = TextEditingController();
+class _SetNewPasswordWidgetState extends State<SetNewPasswordWidget> {
   final passwordTEC = TextEditingController();
-
+  final otpTEC = TextEditingController();
   final formKey = GlobalKey<FormState>();
 
   @override
   void dispose() {
-    roleTEC.dispose();
-    usernameTEC.dispose();
-    // emailTEC.dispose();
     passwordTEC.dispose();
+    otpTEC.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 32),
-      child: Center(
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(maxHeight: 480),
+    return BlocListener<AuthBloc, AuthState>(
+      listener: (context, state) {
+        if (state is AuthPasswordResetState) Navigator.of(context).pop();
+      },
+      child: Scaffold(
+        body: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 32),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
               const Align(
                 alignment: Alignment.centerLeft,
                 child: Text(
-                  'Hello There!',
+                  'Reset Your Password!',
                   style: TextStyle(fontSize: 22, fontWeight: FontWeight.w500),
                 ),
               ),
+              _heightSpacing,
               _heightSpacing,
               Form(
                 key: formKey,
                 child: Column(
                   children: [
                     TextFormField(
-                      controller: usernameTEC,
-                      decoration: const InputDecoration(hintText: 'Username'),
+                      controller: otpTEC,
+                      decoration: const InputDecoration(
+                        hintText: 'Your password-reset OTP',
+                      ),
                       validator: (value) {
-                        if (value!.isEmpty) return 'Username required';
+                        if (value!.length < 4) return '4-digit OTP is required';
+
                         return null;
                       },
                     ),
-                    // _heightSpacing,
-                    // TextFormField(
-                    //   controller: usernameTEC,
-                    //   decoration: const InputDecoration(hintText: 'Email'),
-                    //   validator: (value) {
-                    //     if (value!.isEmpty) return 'Email required';
-                    //     return null;
-                    //   },
-                    // ),
-                    _heightSpacing,
-                    TextFormField(
-                      controller: roleTEC,
-                      decoration: const InputDecoration(hintText: 'Role'),
-                    ),
-                    _heightSpacing,
                     TextFormField(
                       controller: passwordTEC,
-                      decoration: const InputDecoration(hintText: 'Password'),
+                      decoration: const InputDecoration(
+                        hintText: 'Your new password',
+                      ),
                       validator: (value) {
                         if (value!.length < 8) {
                           return 'Password must be at least 8 characters';
@@ -90,6 +77,7 @@ class _RegisterWidgetState extends State<RegisterWidget> {
                 ),
               ),
               _heightSpacing,
+              _heightSpacing,
               BlocBuilder<AuthBloc, AuthState>(
                 builder: (context, state) {
                   return ElevatedButton(
@@ -100,27 +88,26 @@ class _RegisterWidgetState extends State<RegisterWidget> {
                               child: CircularProgressIndicator(strokeWidth: 2),
                             ),
                           )
-                        : const Text('Register'),
+                        : const Text('Reset Password'),
                     onPressed: () {
                       if (formKey.currentState!.validate()) {
-                        context.read<AuthBloc>().add(AuthRegisterIn(
-                              data: RegisterData(
-                                username: usernameTEC.text,
-                                // email: emailTEC.text,
-                                password: passwordTEC.text,
-                                role: roleTEC.text,
-                              ),
+                        context.read<AuthBloc>().add(AuthSetNewPasswprdReset(
+                              otp: otpTEC.text,
+                              newPassword: passwordTEC.text,
                             ));
                       }
                     },
                   );
                 },
               ),
+              _heightSpacing,
               const Text('or', textAlign: TextAlign.center),
-              OutlinedButton(
-                child: const Text('Log In'),
+              _heightSpacing,
+              TextButton.icon(
+                icon: const Icon(Icons.arrow_back),
+                label: const Text('Go Back'),
                 onPressed: () {
-                  context.read<AuthBloc>().add(const SwitchLoginType(0));
+                  Navigator.of(context).pop();
                 },
               ),
             ],

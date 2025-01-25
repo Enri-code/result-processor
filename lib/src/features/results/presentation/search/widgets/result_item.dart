@@ -19,10 +19,7 @@ class ResultItemWidget extends StatelessWidget {
         highlightShape: BoxShape.rectangle,
         onTap: onTap,
         child: Padding(
-          padding: const EdgeInsets.symmetric(
-            horizontal: 6,
-            vertical: 12,
-          ),
+          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 10),
           child: Column(
             children: [
               Row(
@@ -50,25 +47,16 @@ class ResultItemWidget extends StatelessWidget {
                 children: [
                   Text(
                     result.department ?? '',
-                    style: TextStyle(
-                      fontSize: 11,
-                      color: Colors.grey[600],
-                    ),
+                    style: TextStyle(fontSize: 11, color: Colors.grey[600]),
                   ),
                   Text(
                     ' - ${result.courseUnit} Units',
-                    style: TextStyle(
-                      fontSize: 11,
-                      color: Colors.grey[600],
-                    ),
+                    style: TextStyle(fontSize: 11, color: Colors.grey[600]),
                   ),
                   const Spacer(),
                   Text(
                     result.session,
-                    style: TextStyle(
-                      fontSize: 11,
-                      color: Colors.grey[600],
-                    ),
+                    style: TextStyle(fontSize: 11, color: Colors.grey[600]),
                   ),
                 ],
               ),

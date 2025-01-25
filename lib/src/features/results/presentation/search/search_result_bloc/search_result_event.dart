@@ -7,12 +7,12 @@ sealed class SearchResultEvent extends Equatable {
   List<Object> get props => [];
 }
 
-class SearchRegNumberResultEvent extends SearchResultEvent {
-  const SearchRegNumberResultEvent(this.data);
-  final SearchResultByRegistration data;
+class OpenSearchResultEvent extends SearchResultEvent {
+  const OpenSearchResultEvent(this.data);
+  final Result data;
 }
 
-class SearchCourseCodeResultEvent extends SearchResultEvent {
-  const SearchCourseCodeResultEvent(this.data);
-  final SearchResultByCourse data;
+class SearchForResultEvent extends SearchResultEvent {
+  const SearchForResultEvent(this.data);
+  final SearchResult data;
 }

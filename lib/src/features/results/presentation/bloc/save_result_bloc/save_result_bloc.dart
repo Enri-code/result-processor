@@ -12,7 +12,7 @@ part 'save_result_state.dart';
 
 class SaveResultBloc extends Bloc<SaveResultEvent, SaveResultState> {
   final ResultRepository repo;
-  SaveResultBloc(this.repo) : super(SaveResultInitial()) {
+  SaveResultBloc(this.repo) : super(const SaveResultInitial()) {
     on<ValidateResultEvent>((event, emit) {
       emit(ValidateResultState(
         status: const RequestSuccess(),

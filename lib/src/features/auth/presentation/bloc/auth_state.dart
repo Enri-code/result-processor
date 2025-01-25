@@ -45,3 +45,13 @@ final class AuthLoggedOut extends AuthState {
   @override
   List<Object?> get props => [status, authPage];
 }
+
+final class AuthResetPasswordState extends AuthLoggedOut {
+  final String email;
+
+  const AuthResetPasswordState(this.email);
+}
+
+final class AuthPasswordResetState extends AuthLoggedOut {
+  const AuthPasswordResetState();
+}

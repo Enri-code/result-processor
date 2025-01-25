@@ -13,7 +13,9 @@ import 'package:unn_grading/src/features/results/presentation/bloc/edit_result_b
 import 'package:unn_grading/src/features/results/domain/models/result_tab.dart';
 import 'package:unn_grading/src/features/results/presentation/bloc/result_tab_bloc/result_tab_bloc.dart';
 import 'package:unn_grading/src/features/results/presentation/bloc/save_result_bloc/save_result_bloc.dart';
+import 'package:unn_grading/src/features/results/presentation/search/search_result_bloc/search_result_bloc.dart';
 import 'package:unn_grading/src/features/results/presentation/search/widgets/cc_search_dialog.dart';
+import 'package:unn_grading/src/features/results/presentation/search/widgets/rn_search_dialog.dart';
 import 'package:unn_grading/src/features/results/presentation/upload/upload_result_bloc/upload_result_bloc.dart';
 import 'package:unn_grading/src/features/results/presentation/upload/widgets/upload_file.dart';
 import 'package:unn_grading/src/features/results/presentation/widgets/custom_text_fields.dart';
@@ -80,6 +82,18 @@ class _PlutoGridGradingPageState extends State<PlutoGridGradingPage> {
               context.read<EditResultBloc>().add(
                     SetEditResultStateEvent(state: editState),
                   );
+            },
+          ),
+          BlocListener<SearchResultBloc, SearchResultState>(
+            listener: (context, state) {
+              if (state is SearchResultOpenedState) {
+                context.read<ResultTabBloc>().add(
+                      OpenResultTabEvent(state.data),
+                    );
+                context.read<EditResultBloc>().add(
+                      SetOpenResultStateEvent(state.data),
+                    );
+              }
             },
           ),
           //Save new [EditResultState] instance in [ResultTabBloc]'s memory
@@ -214,11 +228,11 @@ class _PlutoGridGradingPageState extends State<PlutoGridGradingPage> {
                         MenuButton(
                           text: const Text('By Registration Number'),
                           onTap: () {
-                            // showDialog(
-                            //   context: context,
-                            //   barrierDismissible: false,
-                            //   builder: (context) => const RNSearchDialog(),
-                            // );
+                            showDialog(
+                              context: context,
+                              barrierDismissible: false,
+                              builder: (context) => const RNSearchDialog(),
+                            );
                           },
                         ),
                       ],
