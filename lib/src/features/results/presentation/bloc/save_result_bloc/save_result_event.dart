@@ -8,7 +8,8 @@ sealed class SaveResultEvent extends Equatable {
 }
 
 class ValidateResultEvent extends SaveResultEvent {
-  const ValidateResultEvent();
+  const ValidateResultEvent(this.status);
+  final RequestStatus status;
 }
 
 class SaveEditedResultEvent extends SaveResultEvent {
@@ -19,11 +20,11 @@ class SaveEditedResultEvent extends SaveResultEvent {
 
 class DeleteEditedResultEvent extends SaveResultEvent {
   const DeleteEditedResultEvent({required this.tab});
-  final ResultTab tab;
+  final SavedResultTab tab;
 }
 
 class UpdateEditedResultEvent extends SaveResultEvent {
   const UpdateEditedResultEvent({required this.editState, required this.tab});
   final EditResultState editState;
-  final ResultTab tab;
+  final SavedResultTab tab;
 }

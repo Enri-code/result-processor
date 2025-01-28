@@ -45,6 +45,13 @@ class _SetNewPasswordWidgetState extends State<SetNewPasswordWidget> {
                 ),
               ),
               _heightSpacing,
+              const Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  'A password-reset OTP has been sent to your email.',
+                  style: TextStyle(fontSize: 10),
+                ),
+              ),
               _heightSpacing,
               Form(
                 key: formKey,
@@ -53,7 +60,7 @@ class _SetNewPasswordWidgetState extends State<SetNewPasswordWidget> {
                     TextFormField(
                       controller: otpTEC,
                       decoration: const InputDecoration(
-                        hintText: 'Your password-reset OTP',
+                        hintText: 'Your OTP',
                       ),
                       validator: (value) {
                         if (value!.length < 4) return '4-digit OTP is required';
@@ -61,6 +68,7 @@ class _SetNewPasswordWidgetState extends State<SetNewPasswordWidget> {
                         return null;
                       },
                     ),
+                    _heightSpacing,
                     TextFormField(
                       controller: passwordTEC,
                       decoration: const InputDecoration(

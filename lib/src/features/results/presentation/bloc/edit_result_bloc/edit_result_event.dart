@@ -19,10 +19,20 @@ class SetEditResultStateEvent extends EditResultEvent {
   final EditResultState? state;
 }
 
-class SetOpenResultStateEvent extends ModifyGridEvent {
-  const SetOpenResultStateEvent(this.data) : _rows = const [];
+abstract class ModifyGridEvent extends EditResultEvent {
+  const ModifyGridEvent();
 
-  const SetOpenResultStateEvent._(this.data, {List<PlutoRow>? rows})
+  /// Each [ModifyGridEvent] has a function to be called to update the
+  /// UI's state with the new values sent to the Bloc.
+  /// A BlocListener in the Widget tree shall listen for these events's data
+  /// and handle appropraitely
+  void onModify(EditResultState state, PlutoGridStateManager stateManager);
+}
+
+class OpenResultDataEvent extends ModifyGridEvent {
+  const OpenResultDataEvent(this.data) : _rows = const [];
+
+  const OpenResultDataEvent._(this.data, {List<PlutoRow>? rows})
       : _rows = rows ?? const [];
 
   final ResultData data;
@@ -33,24 +43,9 @@ class SetOpenResultStateEvent extends ModifyGridEvent {
     stateManager.insertRows(0, _rows);
   }
 
-  SetOpenResultStateEvent _copyWith({ResultData? data, List<PlutoRow>? rows}) {
-    return SetOpenResultStateEvent._(data ?? this.data, rows: rows ?? _rows);
+  OpenResultDataEvent _copyWith({ResultData? data, List<PlutoRow>? rows}) {
+    return OpenResultDataEvent._(data ?? this.data, rows: rows ?? _rows);
   }
-}
-
-// class ExportResultEvent extends EditResultEvent {
-//   // const ExportResultEvent(this.exporter);
-//   // final ExportPlutoGridResult exporter;
-// }
-
-abstract class ModifyGridEvent extends EditResultEvent {
-  const ModifyGridEvent();
-
-  /// Each [ModifyGridEvent] has a function to be called to update the
-  /// UI's state with the new values sent to the Bloc.
-  /// A BlocListener in the Widget tree shall listen for these events's data
-  /// and handle appropraitely
-  void onModify(EditResultState state, PlutoGridStateManager stateManager);
 }
 
 class RemoveRowsEvent extends ModifyGridEvent {

@@ -10,9 +10,9 @@ import 'package:unn_grading/src/features/results/domain/results_repo.dart';
 
 class ResultRepositoryImpl extends ResultRepository {
   @override
-  Future<Either<RequestError, bool>> delete(String id) async {
+  Future<Either<RequestError, bool>> delete(int id) async {
     try {
-      final response = await dioService.delete('/results/delete/$id');
+      final response = await AuthService.dio.delete('/results/delete/$id');
 
       if (response.statusCode == 200) return const Right(true);
 
@@ -23,10 +23,33 @@ class ResultRepositoryImpl extends ResultRepository {
   }
 
   @override
-  Future<Either<RequestError, bool>> submit(ResultData data) async {
+  Future<Either<RequestError, int>> submit(ResultData data) async {
     try {
-      final response = await dioService.post(
+      final jsonData = data.toJson()
+        ..addAll({
+          "level": "0",
+          "lecturers": [1],
+          "faculty": "Faculty",
+        });
+
+      final response = await AuthService.dio.post(
         '/results/submit',
+        data: jsonData,
+      );
+
+      if (response.statusCode == 200) return Right(response.data['result_id']);
+
+      return Left(RequestError(response.data['error']));
+    } catch (e) {
+      return const Left(RequestError.unknown);
+    }
+  }
+
+  @override
+  Future<Either<RequestError, bool>> updateResultMeta(Result data) async {
+    try {
+      final response = await AuthService.dio.patch(
+        '/results/${data.id}/update-meta',
         data: data.toJson(),
       );
 
@@ -39,11 +62,12 @@ class ResultRepositoryImpl extends ResultRepository {
   }
 
   @override
-  Future<Either<RequestError, bool>> update(UpdateResultData data) async {
+  Future<Either<RequestError, bool>> updateResultScores(
+      int id, List<Score> scores) async {
     try {
-      final response = await dioService.put(
-        '/results/update',
-        data: data.toJson(),
+      final response = await AuthService.dio.patch(
+        '/results/$id/update-score',
+        data: scores.map((e) => e.toJson()).toList(),
       );
 
       if (response.statusCode == 200) return const Right(true);
@@ -58,7 +82,7 @@ class ResultRepositoryImpl extends ResultRepository {
   Future<Either<RequestError, bool>> upload(
       File result, String fileName) async {
     try {
-      final response = await dioService.post(
+      final response = await AuthService.dio.post(
         '/results/upload',
         options: Options(
           headers: {HttpHeaders.contentTypeHeader: 'multipart/form-data'},
@@ -78,16 +102,15 @@ class ResultRepositoryImpl extends ResultRepository {
   }
 
   @override
-  Future<Either<RequestError, List<Result>>> searchByDept(
-      SearchResultByDept data) async {
+  Future<Either<RequestError, List<Result>>> search(SearchResult data) async {
     try {
-      final response = await dioService.post(
-        '/results/by-department',
+      final response = await AuthService.dio.get(
+        '/results/search',
         data: data.toJson(),
       );
 
       if (response.statusCode == 200) {
-        return Right(List.from(response.data['results']).map((e) {
+        return Right(List.from(response.data['search_results']).map((e) {
           return ResultData.fromJson(e);
         }).toList());
       }
@@ -99,86 +122,9 @@ class ResultRepositoryImpl extends ResultRepository {
   }
 
   @override
-  Future<Either<RequestError, List<Result>>> searchByCourse(
-    SearchResultByCourse data,
-  ) async {
-    // return Future.delayed(
-    //   const Duration(seconds: 3),
-    //   () => Right(List.generate(9, (index) {
-    //     return const Result(
-    //       id: '',
-    //       courseCode: 'Cos 444',
-    //       courseTitle: 'Cos Title',
-    //       semester: 'First',
-    //       session: '2020-2021',
-    //       department: 'Comp Sci',
-    //       courseUnit: 3,
-    //     );
-    //   })),
-    // );
+  Future<Either<RequestError, ResultData>> openResult(int id) async {
     try {
-      final response = await dioService.get(
-        '/results/by-course',
-        data: data.toJson(),
-      );
-
-      if (response.statusCode == 200) {
-        return Right(List.from(response.data['results']).map((e) {
-          return ResultData.fromJson(e);
-        }).toList());
-      }
-
-      return Left(RequestError(response.data['error']));
-    } catch (e) {
-      return const Left(RequestError.unknown);
-    }
-  }
-
-  @override
-  Future<Either<RequestError, List<Result>>> searchByRegNo(
-      SearchResultByRegistration data) async {
-    try {
-      final response = await dioService.get(
-        '/results/by-registration',
-        data: data.toJson(),
-      );
-
-      if (response.statusCode == 200) {
-        return Right(List.from(response.data['results']).map((e) {
-          return ResultData.fromJson(e);
-        }).toList());
-      }
-      return Left(RequestError(response.data['error']));
-    } catch (e) {
-      return const Left(RequestError.unknown);
-    }
-  }
-
-  @override
-  Future<Either<RequestError, ResultData>> openResult(String id) async {
-    try {
-      // return Future.delayed(
-      //   const Duration(seconds: 3),
-      //   () => Right(ResultData(
-      //     id: '',
-      //     courseUnit: 3,
-      //     courseCode: 'Cos 444',
-      //     courseTitle: 'Cos Title',
-      //     semester: 'First',
-      //     session: '2020-2021',
-      //     department: 'Comp Sci',
-      //     results: List.generate(40, (index) {
-      //       return Score(
-      //           fullname: 'Eric Onyeulo',
-      //           regNo: '2019/247680',
-      //           grade: 'A',
-      //           ca: 28,
-      //           exam: 67,
-      //           total: 95);
-      //     }),
-      //   )),
-      // );
-      final response = await dioService.get('/results/$id}');
+      final response = await AuthService.dio.get('/results/$id');
 
       if (response.statusCode == 200) {
         return Right(ResultData.fromJson(response.data));

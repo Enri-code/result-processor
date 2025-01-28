@@ -22,8 +22,8 @@ class EditResultBloc extends Bloc<EditResultEvent, EditResultState> {
           List.generate(event.count, (_) {
             // generate empty row cells
             return PlutoRow(cells: {
-              ColumnKeys.fullname: PlutoCell(value: ''),
-              ColumnKeys.studentId: PlutoCell(value: ''),
+              ColumnKeys.studentName: PlutoCell(value: ''),
+              ColumnKeys.regNo: PlutoCell(value: ''),
               ColumnKeys.test: PlutoCell(value: ''),
               ColumnKeys.exam: PlutoCell(value: ''),
               ColumnKeys.total: PlutoCell(value: ''),
@@ -56,11 +56,11 @@ class EditResultBloc extends Bloc<EditResultEvent, EditResultState> {
     on<SetEditResultStateEvent>((event, emit) {
       emit(event.state ?? EditResultState());
     });
-    on<SetOpenResultStateEvent>((event, emit) {
-      final rows = event.data.results.map((e) {
+    on<OpenResultDataEvent>((event, emit) {
+      final rows = event.data.scores.map((e) {
         return PlutoRow(cells: {
-          ColumnKeys.fullname: PlutoCell(value: e.fullname),
-          ColumnKeys.studentId: PlutoCell(value: e.regNo),
+          ColumnKeys.studentName: PlutoCell(value: e.studentName),
+          ColumnKeys.regNo: PlutoCell(value: e.regNo),
           ColumnKeys.test: PlutoCell(value: e.ca),
           ColumnKeys.exam: PlutoCell(value: e.exam),
           ColumnKeys.total: PlutoCell(value: e.total),
@@ -76,7 +76,9 @@ class EditResultBloc extends Bloc<EditResultEvent, EditResultState> {
         semesterTEC: TextEditingController(text: event.data.semester),
         sessionTEC: TextEditingController(text: event.data.session),
         departmentTEC: TextEditingController(text: event.data.department),
-        unitsTEC: TextEditingController(text: event.data.courseUnit.toString()),
+        unitsTEC: TextEditingController(
+          text: event.data.courseUnit?.toString(),
+        ),
       );
 
       emit(state);

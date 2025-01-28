@@ -1,8 +1,8 @@
 part of '../pages/pluto_grid_grading_page.dart';
 
 abstract class ColumnKeys {
-  static const fullname = 'full_name';
-  static const studentId = 'student_id';
+  static const studentName = 'student_name';
+  static const regNo = 'reg_no';
   static const test = 'test';
   static const exam = 'exam';
   static const total = 'total';
@@ -11,8 +11,8 @@ abstract class ColumnKeys {
 
 final List<PlutoColumn> _gridColumns = [
   PlutoColumn(
-    title: 'Full Name',
-    field: ColumnKeys.fullname,
+    title: 'Student Name',
+    field: ColumnKeys.studentName,
     type: PlutoColumnType.text(),
     cellPadding: const EdgeInsets.all(2),
     enableAutoEditing: true,
@@ -22,7 +22,7 @@ final List<PlutoColumn> _gridColumns = [
   ),
   PlutoColumn(
     title: 'Reg NO.',
-    field: ColumnKeys.studentId,
+    field: ColumnKeys.regNo,
     type: PlutoColumnType.text(),
     enableAutoEditing: true,
     enableContextMenu: false,
@@ -127,14 +127,14 @@ class _OptionsDropdownButton extends StatelessWidget {
   }
 }
 
-class _GridSection extends StatefulWidget {
-  const _GridSection();
+class _GradingSection extends StatefulWidget {
+  const _GradingSection();
 
   @override
-  State<_GridSection> createState() => _GridSectionState();
+  State<_GradingSection> createState() => _GradingSectionState();
 }
 
-class _GridSectionState extends State<_GridSection> {
+class _GradingSectionState extends State<_GradingSection> {
   final externalScroll = ScrollController();
   PlutoGridStateManager? stateManager;
 
@@ -157,125 +157,133 @@ class _GridSectionState extends State<_GridSection> {
       child: BlocBuilder<EditResultBloc, EditResultState>(
         builder: (context, state) {
           final rowCount = state.rows.length;
-          final height =
-              5 + columnHeight + (rowHeight + 1) * rowCount.toDouble();
+          final height = 5 + columnHeight + (rowHeight + 1) * rowCount;
           return SizedBox(
             height: height,
-            child: Row(
-              children: [
-                SizedBox(
-                  width: 26,
-                  child: Column(
-                    children: [
-                      const SizedBox(height: columnHeight + 2.6),
-                      Expanded(
-                        child: ScrollConfiguration(
-                          behavior: ScrollConfiguration.of(context).copyWith(
-                            scrollbars: false,
-                          ),
-                          child: ListView.builder(
-                            controller: externalScroll,
-                            itemCount: rowCount,
-                            itemBuilder: (context, i) {
-                              return SizedBox(
-                                height: rowHeight + 1,
-                                child: FittedBox(
-                                  fit: BoxFit.scaleDown,
-                                  child: Text(
-                                    '${i + 1}',
-                                    style: TextStyle(
-                                      fontSize: 10,
-                                      color: Colors.grey[600],
-                                      fontWeight: FontWeight.w600,
+            child: BlocSelector<ResultTabBloc, ResultTabState, ResultTab?>(
+              selector: (state) => state.getCurrentTab,
+              builder: (context, getCurrentTab) {
+                return Row(
+                  children: [
+                    SizedBox(
+                      width: 26,
+                      child: Column(
+                        children: [
+                          const SizedBox(height: columnHeight + 2.6),
+                          Expanded(
+                            child: ScrollConfiguration(
+                              behavior:
+                                  ScrollConfiguration.of(context).copyWith(
+                                scrollbars: false,
+                              ),
+                              child: ListView.builder(
+                                key: ValueKey(getCurrentTab),
+                                controller: externalScroll,
+                                itemCount: rowCount,
+                                itemBuilder: (context, i) {
+                                  return SizedBox(
+                                    height: rowHeight + 1,
+                                    child: FittedBox(
+                                      fit: BoxFit.scaleDown,
+                                      child: Text(
+                                        '${i + 1}',
+                                        style: TextStyle(
+                                          fontSize: 10,
+                                          color: Colors.grey[600],
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
                                     ),
-                                  ),
-                                ),
-                              );
-                            },
+                                  );
+                                },
+                              ),
+                            ),
                           ),
+                          const SizedBox(height: 2),
+                        ],
+                      ),
+                    ),
+                    Expanded(
+                      child: Theme(
+                        data: Theme.of(context).copyWith(
+                          inputDecorationTheme: const InputDecorationTheme(),
+                        ),
+                        child: PlutoGrid(
+                          key: ValueKey(getCurrentTab),
+                          rows: List.of(state.rows),
+                          columns: _gridColumns,
+                          configuration: const PlutoGridConfiguration(
+                            enterKeyAction:
+                                PlutoGridEnterKeyAction.editingAndMoveRight,
+                            tabKeyAction:
+                                PlutoGridTabKeyAction.moveToNextOnEdge,
+                            columnSize: PlutoGridColumnSizeConfig(
+                              autoSizeMode: PlutoAutoSizeMode.scale,
+                              resizeMode: PlutoResizeMode.pushAndPull,
+                            ),
+                            style: PlutoGridStyleConfig(
+                              iconSize: 12,
+                              rowHeight: rowHeight,
+                              columnHeight: columnHeight,
+                              enableGridBorderShadow: true,
+                              enableRowColorAnimation: true,
+                              enableColumnBorderVertical: false,
+                              gridBorderColor: Colors.transparent,
+                              gridBackgroundColor: AppColor.lightGrey2,
+                              cellColorInReadOnlyState: Colors.transparent,
+                              cellTextStyle: rowTextStyle,
+                              columnTextStyle: TextStyle(
+                                fontSize: 12,
+                                color: Colors.black,
+                                fontWeight: FontWeight.w600,
+                                decoration: TextDecoration.none,
+                              ),
+                              gridBorderRadius: BorderRadius.all(
+                                Radius.circular(8),
+                              ),
+                              gridPopupBorderRadius: BorderRadius.all(
+                                Radius.circular(12),
+                              ),
+                            ),
+                          ),
+                          onLoaded: (PlutoGridOnLoadedEvent event) {
+                            setupGrid(event.stateManager, rowCount);
+                          },
+                          onChanged: _onChanged,
                         ),
                       ),
-                      const SizedBox(height: 2),
-                    ],
-                  ),
-                ),
-                Expanded(
-                  child:
-                      BlocSelector<ResultTabBloc, ResultTabState, ResultTab?>(
-                    selector: (state) => state.getCurrentTab,
-                    builder: (context, getCurrentTab) {
-                      return PlutoGrid(
-                        key: ValueKey(getCurrentTab),
-                        rows: List.from(state.rows),
-                        columns: _gridColumns,
-                        configuration: const PlutoGridConfiguration(
-                          enterKeyAction:
-                              PlutoGridEnterKeyAction.editingAndMoveRight,
-                          tabKeyAction: PlutoGridTabKeyAction.moveToNextOnEdge,
-                          columnSize: PlutoGridColumnSizeConfig(
-                            autoSizeMode: PlutoAutoSizeMode.scale,
-                            resizeMode: PlutoResizeMode.pushAndPull,
-                          ),
-                          style: PlutoGridStyleConfig(
-                            iconSize: 12,
-                            rowHeight: rowHeight,
-                            columnHeight: columnHeight,
-                            enableGridBorderShadow: true,
-                            enableRowColorAnimation: true,
-                            enableColumnBorderVertical: false,
-                            gridBorderColor: Colors.transparent,
-                            gridBackgroundColor: AppColor.lightGrey2,
-                            cellColorInReadOnlyState: Colors.transparent,
-                            cellTextStyle: rowTextStyle,
-                            columnTextStyle: TextStyle(
-                              fontSize: 12,
-                              color: Colors.black,
-                              fontWeight: FontWeight.w600,
-                              decoration: TextDecoration.none,
-                            ),
-                            gridBorderRadius: BorderRadius.all(
-                              Radius.circular(8),
-                            ),
-                            gridPopupBorderRadius: BorderRadius.all(
-                              Radius.circular(12),
+                    ),
+                    SizedBox(
+                      width: 26,
+                      child: Column(
+                        children: [
+                          const SizedBox(height: columnHeight + 2.6),
+                          Expanded(
+                            child: ScrollConfiguration(
+                              behavior:
+                                  ScrollConfiguration.of(context).copyWith(
+                                scrollbars: false,
+                              ),
+                              child: ListView.builder(
+                                key: ValueKey(getCurrentTab),
+                                itemCount: rowCount,
+                                controller: externalScroll,
+                                itemBuilder: (context, i) {
+                                  return SizedBox(
+                                    height: rowHeight + 1,
+                                    child: _OptionsDropdownButton(index: i),
+                                  );
+                                },
+                              ),
                             ),
                           ),
-                        ),
-                        onLoaded: (PlutoGridOnLoadedEvent event) {
-                          setupGrid(event.stateManager);
-                        },
-                        onChanged: _onChanged,
-                      );
-                    },
-                  ),
-                ),
-                SizedBox(
-                  width: 26,
-                  child: Column(
-                    children: [
-                      const SizedBox(height: columnHeight + 2.6),
-                      Expanded(
-                        child: ScrollConfiguration(
-                          behavior: ScrollConfiguration.of(context).copyWith(
-                            scrollbars: false,
-                          ),
-                          child: ListView.builder(
-                            itemCount: rowCount,
-                            controller: externalScroll,
-                            itemBuilder: (context, i) {
-                              return SizedBox(
-                                height: rowHeight + 1,
-                                child: _OptionsDropdownButton(index: i),
-                              );
-                            },
-                          ),
-                        ),
+                          const SizedBox(height: 2),
+                        ],
                       ),
-                      const SizedBox(height: 2),
-                    ],
-                  ),
-                ),
-              ],
+                    ),
+                  ],
+                );
+              },
             ),
           );
         },
@@ -283,7 +291,7 @@ class _GridSectionState extends State<_GridSection> {
     );
   }
 
-  void setupGrid(PlutoGridStateManager stateManager) {
+  void setupGrid(PlutoGridStateManager stateManager, int rowCount) {
     if (!mounted) return;
     this.stateManager = stateManager;
 
@@ -293,25 +301,11 @@ class _GridSectionState extends State<_GridSection> {
       externalScroll.jumpTo(offset);
     });
 
-    final editResultBloc = context.read<EditResultBloc>();
-    if (editResultBloc.state.rows.isEmpty) {
-      // if (kDebugMode) {
-      //   final rowsToBeAdded = List.generate(Random().nextInt(10), (_) {
-      //     return PlutoRow(cells: {
-      //       ColumnKeys.fullname: PlutoCell(value: ''),
-      //       ColumnKeys.studentId: PlutoCell(value: ''),
-      //       ColumnKeys.test: PlutoCell(value: Random().nextInt(30)),
-      //       ColumnKeys.exam: PlutoCell(value: Random().nextInt(70)),
-      //       ColumnKeys.total: PlutoCell(value: ''),
-      //       ColumnKeys.grade: PlutoCell(value: ''),
-      //     });
-      //   });
-      //   editResultBloc.add(InsertRowsEvent(rows: rowsToBeAdded));
-      // }
+    rowCount = max(100 - rowCount, 0);
 
-      ///insert new empty rows if table has no rows already
-      editResultBloc.add(const InsertRowsEvent(count: 100));
-    }
+    ///insert new empty rows if table has no rows already
+    final editResultBloc = context.read<EditResultBloc>()
+      ..add(InsertRowsEvent(count: rowCount));
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       ///calculate row data [total and grade] for each row
@@ -329,13 +323,7 @@ class _GridSectionState extends State<_GridSection> {
             );
         ScaffoldMessenger.of(context).clearSnackBars();
         WidgetsBinding.instance.addPostFrameCallback((_) {
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            content: Text(mssg, overflow: TextOverflow.ellipsis, maxLines: 1),
-            elevation: 8,
-            showCloseIcon: true,
-            backgroundColor: AppColor.error,
-            behavior: SnackBarBehavior.fixed,
-          ));
+          showSnackBar(context, mssg);
         });
       }
 
@@ -349,18 +337,18 @@ class _GridSectionState extends State<_GridSection> {
         case ColumnKeys.test:
           final val = num.tryParse(event.value);
           if (val == null) {
-            onError('Only numbers allowed in C.A.');
+            onError('Only numbers are allowed in Test score');
           } else if (val > 30) {
-            onError('C.A. cannot be more than 30');
+            onError('Test score cannot be more than 30');
           }
           context.read<EditResultBloc>().add(CalculateRowData(event.row));
           break;
         case ColumnKeys.exam:
           final val = num.tryParse(event.value);
           if (val == null) {
-            onError('Only numbers allowed in Exam');
+            onError('Only numbers are allowed in Exam score');
           } else if (val > 70) {
-            onError('Exam cannot be more than 70');
+            onError('Exam score cannot be more than 70');
           }
           context.read<EditResultBloc>().add(CalculateRowData(event.row));
           break;

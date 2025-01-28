@@ -1,25 +1,7 @@
 import 'package:equatable/equatable.dart';
 
-class UpdateResultData {
-  final String courseCode, regNo, session, semester;
-
-  UpdateResultData({
-    required this.courseCode,
-    required this.regNo,
-    required this.session,
-    required this.semester,
-  });
-
-  Map<String, dynamic> toJson() => {
-        'course_code': courseCode,
-        'registration_number': regNo,
-        'session': session,
-        'semester': semester,
-      };
-}
-
 class ResultData extends Result {
-  final List<Score> results;
+  final List<Score> scores;
 
   const ResultData({
     super.id,
@@ -29,47 +11,46 @@ class ResultData extends Result {
     required super.session,
     required super.department,
     required super.courseUnit,
-    required this.results,
+    required this.scores,
   });
 
   @override
   Map<String, dynamic> toJson() {
     return {
       ...super.toJson(),
-      "results": results.map((e) => e.toJson()).toList(),
+      "results": scores.map((e) => e.toJson()).toList(),
     };
   }
 
   factory ResultData.fromJson(Map<String, dynamic> json) {
-    final results = List.from(json['results']).map((e) {
+    final results = List.from(json['scores'] ?? []).map((e) {
       return Score(
-        fullname: e['full_name'],
-        regNo: e['registration_number'],
-        ca: e['ca_score'],
-        exam: e['exam_score'],
-        total: e['total_score'],
-        grade: e['grade'],
+        studentName: e['student_name'] ?? '',
+        regNo: e['registration_number'] ?? '',
+        ca: int.tryParse(e['ca_score']?.toString() ?? '') ?? 0,
+        exam: int.tryParse(e['exam_score']?.toString() ?? '') ?? 0,
+        total: int.tryParse(e['total_score']?.toString() ?? '') ?? 0,
+        grade: e['grade'] ?? '',
       );
     }).toList();
 
     return ResultData(
-      courseCode: json['course_code'],
-      courseTitle: json['course_title'],
-      semester: json['semester_name'],
-      session: json['session'],
-      department: json['exam_department'],
+      id: json['id'] ?? '',
+      courseCode: json['course_code'] ?? '',
+      courseTitle: json['course_title'] ?? '',
+      semester: json['semester'] ?? '',
+      session: json['session'] ?? '',
+      department: json['department'] ?? '',
       courseUnit: json['course_unit'],
-      results: results,
+      scores: results,
     );
   }
 }
 
 class Result extends Equatable {
-  final String? id;
-  final String courseCode, courseTitle, semester, session;
-  final String? department;
+  final int? id;
+  final String courseCode, courseTitle, semester, session, department;
   final int? courseUnit;
-  // final int? level;
 
   const Result({
     this.id,
@@ -77,10 +58,8 @@ class Result extends Equatable {
     required this.courseTitle,
     required this.semester,
     required this.session,
-    // required this.faculty,
     required this.department,
     required this.courseUnit,
-    // required this.level,
   });
 
   Map<String, dynamic> toJson() => {
@@ -88,9 +67,7 @@ class Result extends Equatable {
         "course_code": courseCode,
         "course_title": courseTitle,
         "course_unit": courseUnit,
-        // "level": level,
-        // "faculty": faculty,
-        "exam_department": department,
+        "department": department,
         "semester_name": semester,
         "session": session,
       };
@@ -100,11 +77,11 @@ class Result extends Equatable {
 }
 
 class Score {
-  final String fullname, regNo, grade;
+  final String studentName, regNo, grade;
   final int ca, exam, total;
 
   Score({
-    required this.fullname,
+    required this.studentName,
     required this.regNo,
     required this.grade,
     required this.ca,
@@ -112,8 +89,9 @@ class Score {
     required this.total,
   });
 
+//required fields: registration_number, ca_score, exam_score, total_score, grade"
   Map<String, dynamic> toJson() => {
-        "full_name": fullname,
+        "student_name": studentName,
         "registration_number": regNo,
         "ca_score": ca,
         "exam_score": exam,

@@ -6,10 +6,7 @@ sealed class SaveResultState extends Equatable {
   final Map<ResultTab, EditResultState> savedResultStates;
   final RequestStatus? status;
 
-  SaveResultState copyWith({
-    RequestStatus? status,
-    // Map<ResultTab, EditResultState>? savedResultStates,
-  });
+  SaveResultState copyWith({RequestStatus? status});
 
   @override
   List<Object?> get props => [status, savedResultStates];
@@ -24,26 +21,54 @@ final class SaveResultInitial extends SaveResultState {
   }
 }
 
-final class ValidateResultState extends SaveResultState {
-  const ValidateResultState({super.status, super.savedResultStates});
+final class ResultValidateState extends SaveResultState {
+  const ResultValidateState({super.status, super.savedResultStates});
 
   @override
-  ValidateResultState copyWith({RequestStatus? status}) {
-    return ValidateResultState(status: status ?? this.status);
+  ResultValidateState copyWith({RequestStatus? status}) {
+    return ResultValidateState(
+      status: status ?? this.status,
+      savedResultStates: savedResultStates,
+    );
   }
 }
 
-final class ResultSavedState extends SaveResultState {
-  const ResultSavedState({super.status, super.savedResultStates});
+final class ResultSaveState extends SaveResultState {
+  final ResultTab tab;
+  const ResultSaveState({
+    super.status,
+    super.savedResultStates,
+    required this.tab,
+  });
 
   @override
-  ResultSavedState copyWith({
+  ResultSaveState copyWith({
     RequestStatus? status,
     // Map<ResultTab, EditResultState>? savedResultStates,
   }) {
-    return ResultSavedState(
+    return ResultSaveState(
       status: status ?? this.status,
+      savedResultStates: savedResultStates,
+      tab: tab,
       // savedResultStates: savedResultStates ?? this.savedResultStates,
+    );
+  }
+}
+
+final class ResultDeleteState extends SaveResultState {
+  final ResultTab tab;
+  const ResultDeleteState({
+    super.status,
+    super.savedResultStates,
+    required this.tab,
+  });
+
+  @override
+  ResultDeleteState copyWith({RequestStatus? status}) {
+    return ResultDeleteState(
+      status: status ?? this.status,
+      savedResultStates: savedResultStates,
+      tab: tab,
     );
   }
 }

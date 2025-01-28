@@ -31,33 +31,38 @@ class ResultItemWidget extends StatelessWidget {
                       fontWeight: FontWeight.w500,
                     ),
                   ),
-                  Text(
-                    '  -  ${result.courseTitle}',
-                    style: const TextStyle(fontSize: 12),
-                  ),
+                  if (result.courseTitle.isNotEmpty)
+                    Text(
+                      '  -  ${result.courseTitle}',
+                      style: const TextStyle(fontSize: 12),
+                    ),
                   const Spacer(),
-                  Text(
-                    '${result.semester} semester',
-                    style: const TextStyle(fontSize: 10),
-                  ),
+                  if (result.semester.isNotEmpty)
+                    Text(
+                      '${result.semester} semester',
+                      style: const TextStyle(fontSize: 10),
+                    ),
                 ],
               ),
               const SizedBox(height: 4),
               Row(
                 children: [
-                  Text(
-                    result.department ?? '',
-                    style: TextStyle(fontSize: 11, color: Colors.grey[600]),
-                  ),
-                  Text(
-                    ' - ${result.courseUnit} Units',
-                    style: TextStyle(fontSize: 11, color: Colors.grey[600]),
-                  ),
+                  if (result.department.isNotEmpty)
+                    Text(
+                      result.department,
+                      style: TextStyle(fontSize: 11, color: Colors.grey[600]),
+                    ),
+                  if (result.courseUnit != null)
+                    Text(
+                      ' - ${result.courseUnit} Units',
+                      style: TextStyle(fontSize: 11, color: Colors.grey[600]),
+                    ),
                   const Spacer(),
-                  Text(
-                    result.session,
-                    style: TextStyle(fontSize: 11, color: Colors.grey[600]),
-                  ),
+                  if (result.session.isNotEmpty)
+                    Text(
+                      result.session,
+                      style: TextStyle(fontSize: 11, color: Colors.grey[600]),
+                    ),
                 ],
               ),
             ],

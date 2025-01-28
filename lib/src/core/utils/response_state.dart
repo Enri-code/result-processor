@@ -1,29 +1,23 @@
 import 'package:equatable/equatable.dart';
 
 abstract class RequestStatus extends Equatable {
-  const RequestStatus();
+  final String message;
+  const RequestStatus([this.message = '']);
+
+  @override
+  List<Object?> get props => [message];
 }
 
 class RequestError extends RequestStatus {
-  final String error;
-  const RequestError(this.error);
+  const RequestError([super.message]);
 
   static const unknown = RequestError('An unknown error occured.');
-
-  @override
-  List<Object?> get props => [error];
 }
 
 class RequestSuccess extends RequestStatus {
-  const RequestSuccess();
-
-  @override
-  List<Object?> get props => [];
+  const RequestSuccess([super.message]);
 }
 
 class RequestLoading extends RequestStatus {
-  const RequestLoading();
-
-  @override
-  List<Object?> get props => [];
+  const RequestLoading([super.message]);
 }

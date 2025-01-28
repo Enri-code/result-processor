@@ -14,7 +14,7 @@ class EditResultState extends Equatable {
   })  : courseTitleTEC = courseTitleTEC ?? TextEditingController(),
         courseCodeTEC = courseCodeTEC ?? TextEditingController(),
         unitsTEC = unitsTEC ?? TextEditingController(),
-        semesterTEC = semesterTEC ?? (TextEditingController()..text = 'First'),
+        semesterTEC = semesterTEC ?? TextEditingController(),
         sessionTEC = sessionTEC ?? TextEditingController(),
         departmentTEC = departmentTEC ?? TextEditingController();
 

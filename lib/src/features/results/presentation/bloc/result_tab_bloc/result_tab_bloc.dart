@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -14,10 +15,12 @@ class ResultTabBloc extends Bloc<ResultTabEvent, ResultTabState> {
       final tab = NewResultTab(id: UniqueKey().toString());
       _setNewTab(emit, tab);
     });
+    on<UpdateResultTabDataEvent>(_onUpdateResultTabDataEvent);
     on<OpenResultTabEvent>((event, emit) {
-      final tab = NewResultTab(
+      final tab = SavedResultTab(
+        id: UniqueKey().toString(),
+        resultId: event.result.id,
         title: event.result.courseCode,
-        id: event.result.id ?? UniqueKey().toString(),
       );
       _setNewTab(emit, tab);
     });
@@ -25,6 +28,7 @@ class ResultTabBloc extends Bloc<ResultTabEvent, ResultTabState> {
       emit(state.copyWith(currentTab: event.tab));
     });
     on<CloseAllResultTabsEvent>((event, emit) {
+      state.editResultStates.forEach((_, value) => value.dispose());
       emit(state.copyWith(
         currentTab: const _NoResultTab(),
         resultTabs: [],
@@ -54,6 +58,23 @@ class ResultTabBloc extends Bloc<ResultTabEvent, ResultTabState> {
         ));
       }
     });
+  }
+
+  FutureOr<void> _onUpdateResultTabDataEvent(
+    UpdateResultTabDataEvent event,
+    Emitter<ResultTabState> emit,
+  ) {
+    final tabIndex = state.resultTabs.indexWhere((e) => e.id == event.tab.id);
+    final currentTab = state.resultTabs[tabIndex];
+    emit(state.copyWith(
+      resultTabs: List.from(state.resultTabs)
+        ..removeAt(tabIndex)
+        ..insert(tabIndex, event.tab),
+      editResultStates: Map.from(state.editResultStates)
+        ..remove(currentTab)
+        ..[event.tab] = state.editResultStates[currentTab]!,
+      currentTab: state._currentTab == currentTab ? event.tab : null,
+    ));
   }
 
   void _setNewTab(Emitter<ResultTabState> emit, ResultTab tab) {

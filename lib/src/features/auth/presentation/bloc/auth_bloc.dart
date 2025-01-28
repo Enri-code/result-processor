@@ -1,5 +1,6 @@
 // ignore_for_file: no_leading_underscores_for_local_identifiers
 
+import 'package:dio_refresh/dio_refresh.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:unn_grading/src/core/utils/response_state.dart';
@@ -26,21 +27,41 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       data.fold((left) {
         emit(state.copyWith(status: left));
       }, (right) {
-        emit(state.copyWith(status: const RequestSuccess()));
-        add(const SwitchLoginType(1));
+        emit(state.copyWith(
+          status: const RequestSuccess('Successfully created account'),
+        ));
+        add(const SwitchLoginType(0));
       });
     });
     on<AuthLogIn>((event, emit) async {
       emit(state.copyWith(status: const RequestLoading()));
       final data = await repo.login(event.username, event.password);
 
-      data.fold((left) {
-        emit(state.copyWith(status: left));
-      }, (right) {
-        emit(AuthLoggedIn(user: right));
-      });
+      await data.fold(
+        (left) {
+          emit(state.copyWith(status: left));
+        },
+        (right) async {
+          TokenManager.instance.setToken(right);
+          // = right;
+          final data = await repo.getUser();
+          await data.fold(
+            (left) {
+              emit(state.copyWith(status: left));
+            },
+            (right) async {
+              emit(AuthLoggedIn(user: right));
+            },
+          );
+        },
+      );
     });
-    on<AuthLogOut>((event, emit) => emit(const AuthLoggedOut()));
+    on<AuthLogOut>((event, emit) {
+      TokenManager.instance.setToken(
+        TokenStore(accessToken: null, refreshToken: null),
+      );
+      emit(const AuthLoggedOut());
+    });
     on<AuthSendPasswprdReset>((event, emit) async {
       emit(state.copyWith(status: const RequestLoading()));
       final data = await repo.forgotPassword(event.email);
@@ -66,8 +87,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       });
     });
     on<SwitchLoginType>((event, emit) {
-      final _state = state as AuthLoggedOut;
-      emit(_state.copyWith(authPage: event.index));
+      emit((state as AuthLoggedOut).copyWith(authPage: event.index));
     });
   }
 }

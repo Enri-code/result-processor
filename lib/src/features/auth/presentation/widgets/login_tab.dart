@@ -76,7 +76,7 @@ class _LoginWidgetState extends State<LoginWidget> {
                     ),
                   ),
                   validator: (value) {
-                    if (value!.isEmpty) return 'Password required';
+                    if (value!.isEmpty) return 'Password is required';
                     return null;
                   },
                 ),
@@ -87,7 +87,7 @@ class _LoginWidgetState extends State<LoginWidget> {
           RichText(
             text: TextSpan(
               text: 'Forgot Password?',
-              style: TextStyle(fontSize: 11, color: Colors.blue[900]),
+              style: TextStyle(fontSize: 11.5, color: Colors.blue[900]),
               recognizer: TapGestureRecognizer()..onTap = _onForgotPassword,
             ),
           ),

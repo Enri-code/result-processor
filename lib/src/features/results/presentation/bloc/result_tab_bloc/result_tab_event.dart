@@ -11,6 +11,11 @@ class NewResultTabEvent extends ResultTabEvent {
   const NewResultTabEvent();
 }
 
+class UpdateResultTabDataEvent extends ResultTabEvent {
+  const UpdateResultTabDataEvent(this.tab);
+  final ResultTab tab;
+}
+
 class OpenResultTabEvent extends ResultTabEvent {
   const OpenResultTabEvent(this.result);
   final Result result;

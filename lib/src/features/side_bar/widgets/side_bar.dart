@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:unn_grading/src/features/results/domain/models/result_tab.dart';
 import 'package:unn_grading/src/features/results/presentation/bloc/result_tab_bloc/result_tab_bloc.dart';
-import 'package:unn_grading/src/features/side_bar/widgets/result_tabs.dart';
+import 'package:unn_grading/src/features/side_bar/widgets/result_tab_widget.dart';
 import 'package:unn_grading/src/features/side_bar/side_bar_bloc/side_bar_bloc.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -74,8 +74,9 @@ class MySideBar extends StatelessWidget {
                             alignment: Alignment.centerLeft,
                             child: const DefaultTextStyle(
                               style: TextStyle(
-                                fontSize: 10,
+                                fontSize: 11,
                                 color: Colors.black,
+                                fontWeight: FontWeight.w500,
                               ),
                               child: _TabsSection(),
                             ),
@@ -111,9 +112,7 @@ class _LogoBanner extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: () {
-        launchUrl(Uri.parse('https://techsalis.com/'));
-      },
+      onTap: () => launchUrl(Uri.parse('https://techsalis.com/')),
       child: Container(
         padding: const EdgeInsets.fromLTRB(6, 6, 6, 8),
         decoration: const BoxDecoration(

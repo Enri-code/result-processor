@@ -103,9 +103,7 @@ class _ForgotPasswordWidgetState extends State<ForgotPasswordWidget> {
               TextButton.icon(
                 icon: const Icon(Icons.arrow_back),
                 label: const Text('Go Back'),
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
+                onPressed: () => Navigator.of(context).pop(),
               ),
             ],
           ),

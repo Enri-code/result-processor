@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:unn_grading/src/core/constants/theme.dart';
+import 'package:unn_grading/src/core/utils/helpers.dart';
+import 'package:unn_grading/src/core/utils/response_state.dart';
 import 'package:unn_grading/src/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:unn_grading/src/features/auth/presentation/widgets/login_tab.dart';
 import 'package:unn_grading/src/features/auth/presentation/widgets/register_tab.dart';
@@ -48,42 +50,58 @@ class _LoginViewState extends State<LoginView> {
         ),
       ],
       child: Dialog(
-        insetPadding: const EdgeInsets.all(40),
         clipBehavior: Clip.hardEdge,
+        insetPadding: const EdgeInsets.all(40),
         shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.all(Radius.circular(8)),
+          borderRadius: BorderRadius.all(Radius.circular(12)),
         ),
-        child: LayoutBuilder(builder: (context, consts) {
-          return Row(
-            children: [
-              if (consts.maxWidth > 500) const Expanded(child: _BGView()),
-              Expanded(
-                child: ClipRRect(
-                  clipBehavior: Clip.hardEdge,
-                  child: MaterialApp(
-                    theme: themeData,
-                    debugShowCheckedModeBanner: false,
-                    home: Scaffold(
-                      body: BlocBuilder<AuthBloc, AuthState>(
-                        builder: (context, state) {
-                          return PageView(
-                            controller: pageController,
-                            children: const [LoginWidget(), RegisterWidget()],
-                            onPageChanged: (value) {
-                              context.read<AuthBloc>().add(
-                                    SwitchLoginType(value),
-                                  );
-                            },
-                          );
-                        },
+        child: Scaffold(
+          body: LayoutBuilder(builder: (context, consts) {
+            return Row(
+              children: [
+                if (consts.maxWidth > 500) const Expanded(child: _BGView()),
+                Expanded(
+                  child: ClipRRect(
+                    clipBehavior: Clip.hardEdge,
+                    child: MaterialApp(
+                      theme: themeData,
+                      debugShowCheckedModeBanner: false,
+                      home: Scaffold(
+                        body: BlocConsumer<AuthBloc, AuthState>(
+                          listener: (context, state) {
+                            if (state.status is RequestError) {
+                              showSnackBar(
+                                context,
+                                (state.status as RequestError).message,
+                              );
+                            } else if (state.status is RequestSuccess) {
+                              showSnackBar(
+                                context,
+                                'Successful',
+                                isError: false,
+                              );
+                            }
+                          },
+                          builder: (context, state) {
+                            return PageView(
+                              controller: pageController,
+                              children: const [LoginWidget(), RegisterWidget()],
+                              onPageChanged: (value) {
+                                context.read<AuthBloc>().add(
+                                      SwitchLoginType(value),
+                                    );
+                              },
+                            );
+                          },
+                        ),
                       ),
                     ),
                   ),
                 ),
-              ),
-            ],
-          );
-        }),
+              ],
+            );
+          }),
+        ),
       ),
     );
   }
