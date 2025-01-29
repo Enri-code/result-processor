@@ -66,7 +66,7 @@ class ResultRepositoryImpl extends ResultRepository {
       int id, List<Score> scores) async {
     try {
       final response = await AuthService.dio.patch(
-        '/results/$id/update-score',
+        '/results/$id/update-scores',
         data: scores.map((e) => e.toJson()).toList(),
       );
 
