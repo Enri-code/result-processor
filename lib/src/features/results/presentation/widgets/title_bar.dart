@@ -144,12 +144,45 @@ class TitleBarWidget extends StatelessWidget {
                   submenu: SubMenu(
                     menuItems: [
                       MenuButton(
-                        text: const Text('PDF File'),
-                        icon: const Icon(Icons.picture_as_pdf),
+                        text: const Text('.DOCX File'),
+                        icon: const Icon(Icons.edit_document),
                         onTap: () {
                           context.read<UploadResultBloc>().add(
                                 const SetResultFileTypeEvent(
-                                    ResultFileType.pdf),
+                                  ResultFileType.docx,
+                                ),
+                              );
+                          showDialog(
+                            context: context,
+                            barrierDismissible: false,
+                            builder: (context) => const DragTargetWidget(),
+                          );
+                        },
+                      ),
+                      MenuButton(
+                        text: const Text('.CSV File'),
+                        icon: const Icon(Icons.my_library_books),
+                        onTap: () {
+                          context.read<UploadResultBloc>().add(
+                                const SetResultFileTypeEvent(
+                                  ResultFileType.csv,
+                                ),
+                              );
+                          showDialog(
+                            context: context,
+                            barrierDismissible: false,
+                            builder: (context) => const DragTargetWidget(),
+                          );
+                        },
+                      ),
+                      MenuButton(
+                        text: const Text('.XLSX File'),
+                        icon: const Icon(Icons.file_present_rounded),
+                        onTap: () {
+                          context.read<UploadResultBloc>().add(
+                                const SetResultFileTypeEvent(
+                                  ResultFileType.xlsx,
+                                ),
                               );
                           showDialog(
                             context: context,

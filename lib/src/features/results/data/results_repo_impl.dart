@@ -106,7 +106,7 @@ class ResultRepositoryImpl extends ResultRepository {
     try {
       final response = await AuthService.dio.get(
         '/results/search',
-        data: data.toJson(),
+        queryParameters: {...data.toJson(), "per_page": 15, "page": 1},
       );
 
       if (response.statusCode == 200) {

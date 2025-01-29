@@ -14,7 +14,7 @@ class UploadResultBloc extends Bloc<UploadResultEvent, UploadResultState> {
 
   UploadResultBloc(this.repo)
       : super(const UploadResultInitialState(
-          fileType: ResultFileType.pdf,
+          fileType: ResultFileType.csv,
         )) {
     on<PickResultFileEvent>((event, emit) async {
       File? file = event.file;

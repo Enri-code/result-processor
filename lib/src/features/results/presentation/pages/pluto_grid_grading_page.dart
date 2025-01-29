@@ -98,7 +98,8 @@ class _PlutoGridGradingPageState extends State<PlutoGridGradingPage> {
               listenWhen: (p, c) => p.getCurrentTab != c.getCurrentTab,
               listener: (context, state) {
                 final editState = state.editResultStates[state.getCurrentTab];
-                if (editState != null) {
+                if (editState != null ||
+                    state.getCurrentTab is! SavedResultTab) {
                   context.read<EditResultBloc>().add(
                         SetEditResultStateEvent(state: editState),
                       );

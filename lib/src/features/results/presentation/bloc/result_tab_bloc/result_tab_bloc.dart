@@ -38,7 +38,9 @@ class ResultTabBloc extends Bloc<ResultTabEvent, ResultTabState> {
     on<CloseResultTabEvent>((event, emit) {
       final tab = event.tab ?? state._currentTab;
 
-      state.editResultStates[tab]?.dispose();
+      try {
+        state.editResultStates[tab]?.dispose();
+      } catch (e) {}
       emit(state.copyWith(
         resultTabs: List.from(state.resultTabs)..remove(tab),
         editResultStates: Map.from(state.editResultStates)..remove(tab),

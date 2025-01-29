@@ -51,17 +51,27 @@ class _DragTargetWidgetState extends State<DragTargetWidget> {
               listener: (context, state) {
                 if (state.status is RequestSuccess) {
                   Future.delayed(
-                      Durations.extralong4, Navigator.of(context).pop);
+                    Durations.extralong4,
+                    Navigator.of(context).pop,
+                  );
                 }
               },
               builder: (context, state) {
                 String getFileTypeName() {
-                  if (state.fileType == ResultFileType.pdf) return 'PDF ';
+                  if (state.fileType == ResultFileType.csv) return 'CSV ';
+                  if (state.fileType == ResultFileType.docx) return 'DOCX ';
+                  if (state.fileType == ResultFileType.xlsx) return 'XLSX ';
                   return '';
                 }
 
                 getFileFormat() {
-                  if (state.fileType == ResultFileType.pdf) return Formats.pdf;
+                  if (state.fileType == ResultFileType.csv) return Formats.csv;
+                  if (state.fileType == ResultFileType.docx) {
+                    return Formats.docx;
+                  }
+                  if (state.fileType == ResultFileType.xlsx) {
+                    return Formats.xlsx;
+                  }
                 }
 
                 return DropRegion(

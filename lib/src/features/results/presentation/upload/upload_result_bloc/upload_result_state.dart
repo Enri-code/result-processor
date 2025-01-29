@@ -1,9 +1,9 @@
 part of 'upload_result_bloc.dart';
 
-enum ResultFileType { pdf, docx }
+enum ResultFileType { csv, docx, xlsx }
 
 sealed class UploadResultState extends Equatable {
-  const UploadResultState({this.status, this.fileType = ResultFileType.pdf});
+  const UploadResultState({this.status, this.fileType = ResultFileType.csv});
 
   final ResultFileType fileType;
   final RequestStatus? status;

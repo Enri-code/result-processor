@@ -42,7 +42,6 @@ class EditResultBloc extends Bloc<EditResultEvent, EditResultState> {
       int? total;
       try {
         total = _calculateRowTotal(event.row.cells).toInt();
-        // ignore: empty_catches
       } catch (e) {}
       event.row.cells[ColumnKeys.total]!.value = total ?? '';
       event.row.cells[ColumnKeys.grade]!.value =

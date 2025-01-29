@@ -32,11 +32,16 @@ class ResultItemWidget extends StatelessWidget {
                     ),
                   ),
                   if (result.courseTitle.isNotEmpty)
-                    Text(
-                      '  -  ${result.courseTitle}',
-                      style: const TextStyle(fontSize: 12),
-                    ),
-                  const Spacer(),
+                    Expanded(
+                      child: Text(
+                        '  -  ${result.courseTitle}',
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(fontSize: 12),
+                      ),
+                    )
+                  else
+                    const Spacer(),
                   if (result.semester.isNotEmpty)
                     Text(
                       '${result.semester} semester',
